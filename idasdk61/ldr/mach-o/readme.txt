@@ -1,0 +1,1 @@
+To build the mac debugger, /usr/include from Mac should be copied or symlinked to the "h" directory here

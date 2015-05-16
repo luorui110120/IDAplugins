@@ -1,0 +1,10 @@
+
+STUB	    '..\STUB.'
+
+DESCRIPTION 'IDA disassembler module'
+
+EXPORTS
+;#pe-
+	    LPH	@1 DATA,NONAME
+;#pe*
+

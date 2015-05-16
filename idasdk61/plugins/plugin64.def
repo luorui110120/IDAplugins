@@ -1,0 +1,10 @@
+
+STUB        '..\STUB.'
+
+DESCRIPTION 'IDA plugin module'
+
+EXPORTS
+;#pe-
+            PLUGIN @1 DATA,NONAME
+;#pe*
+            

@@ -1,0 +1,64 @@
+
+
+Please read "readme.txt" before reading this file!
+
+
+
+How to install SDK for Borland compilers
+----------------------------------------
+
+All source files are the same for all platforms and are compiled using the
+same makefile. You need to specify target in the command line:
+
+        make                                       -- for WIN32
+        idamake.pl -D__LINUX__                     -- for Linux
+        idamake.pl -D__MAC__                       -- for Mac OS X
+
+
+WIN32 versions can be created only by Borland C++ CBuilder v4.0
+Probably the old BCC v5.2 will work too, but we haven't checked it.
+
+You can compile Windows modules under Windows.
+You can compile Linux   modules under Linux.
+
+To create idag64 modules, define the __EA64__ symbol. For example:
+
+        make -D__EA64__
+
+will compile a modlue for the 64-bit version of IDA.
+
+Please note that idag64 itself is a 32-bit application, so the above line
+compiles a 32-bit module that can handle 64-bit applications with idag64.
+
+To create a true 64-bit debugger module, define the __X64__ symbol:
+
+        make -D__X64__
+
+This mode of compilation should be used only for debugger servers (all
+other IDA modules are 32-bit).
+
+Also, it is a good idea to create an optimized version of the module.
+To enable optimizations, defined the NDEBUG symbol, for example:
+
+        make -D__EA64__ -DNDEBUG
+
+-----------------------------------------------
+
+        Installation:
+
+0. Unzip the archive with -d switch:
+
+        unzip -d idasdk.zip
+
+1. Edit file
+        allmake.mak             modify pathes to your compilers and sdk
+
+2. Add to your path:
+        c:\idasdk\bin
+        and you compiler directory
+
+3. Compile and build utilities in ETC directory. See ETC\README file.
+
+4. Run make in the SDK directory in order to create compiler
+   configuration files (*.cfg)
+

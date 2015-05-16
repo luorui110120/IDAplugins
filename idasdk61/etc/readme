@@ -1,0 +1,12 @@
+
+        You should compile mkidp.cpp with any compiler and put
+        the mkidp.exe file in bin directory.
+
+        This utility will be used for create a processor modulle (.w32)
+        from a simple dynamic library (.dll). This process consists of writing
+        the processor declaration string into the file header (in fact into a gap
+        between the MZ and PE headers).
+
+        The same is with ld.cpp
+
+	These utilities are not necessary for Linux/Mac.

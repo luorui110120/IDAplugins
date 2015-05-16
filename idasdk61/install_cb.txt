@@ -1,0 +1,36 @@
+
+
+Please read "readme.txt" before reading this file!
+
+
+The CBuilder users should use the chart plugin provided
+in the SDK. You just load the sample into the environment and
+compile it. Due to the limitations in CBuilder5, you'll have to
+run postbuild.bat after the compilation.
+The output files are created in bin/plugins by default.
+
+To create a new module, copy a sample project to a new directory,
+rename and edit it.
+
+The settings for the new projects are the following:
+
+        - Predefined preprocessor macros: __NT__,__IDP__
+          Define __EA64__ for 64-bit targets
+          Define __X64__ for 64-bit debugger servers
+
+        - Include path: ../../include
+
+        - Additional library: ../../libbor.w32/ida.lib
+
+        - Output file name: ../../bin/plugins/filename.plw
+          (filename.p64 for 64-bit targets)
+
+        - Post-build batch file should be edited to reflect the
+          plugin file name
+
+
+This setup allows you to create IDA Pro plugins with VCL components.
+To create loader and processor modules, please use the command line tools.
+The installation procedure for them is explained in the install_make.txt.
+
+

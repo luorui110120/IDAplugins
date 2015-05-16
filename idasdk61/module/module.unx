@@ -1,0 +1,73 @@
+#IM = MODULE\\
+#UPATH = E:\TOOLSES\\
+_CFLAGS=$(__CFLAGS) -D__IDP__
+
+__IDP__=1
+MAC_NO_DEAD_STRIP=1
+include ../../allmake.unx
+
+ifdef O1
+OBJ1=$(F)$(O1)$(O)
+endif
+
+ifdef O2
+OBJ2=$(F)$(O2)$(O)
+endif
+
+ifdef O3
+OBJ3=$(F)$(O3)$(O)
+endif
+
+ifdef O4
+OBJ4=$(F)$(O4)$(O)
+endif
+
+ifdef O5
+OBJ5=$(F)$(O5)$(O)
+endif
+
+ifdef O6
+OBJ6=$(F)$(O6)$(O)
+endif
+
+ifdef O7
+OBJ7=$(F)$(O7)$(O)
+endif
+
+ifdef O8
+OBJ8=$(F)$(O8)$(O)
+endif
+
+ifdef O9
+OBJ9=$(F)$(O9)$(O)
+endif
+
+ifdef H1
+HELPS=$(H1)$(HH)
+endif
+
+OBJS=$(F)ins$(O) $(F)ana$(O) $(F)out$(O) $(F)reg$(O) $(F)emu$(O) \
+     $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4) $(OBJ5) $(OBJ6) $(OBJ7) $(OBJ8) $(OBJ9) \
+     $(ADDITIONAL_FILES)
+
+IDP_MODULE=$(R)procs/$(PROC)$(IDP)
+
+all:    objdir $(HELPS) $(IDP_MODULE) $(ADDITIONAL_GOALS)
+
+ifdef __LINUX__
+PLUGIN_SCRIPT=-Wl,--version-script=../idp.script
+endif
+ifdef __MAC__
+PLUGIN_SCRIPT=-Wl,-install_name,$(PROC)$(IDP)
+endif
+
+$(IDP_MODULE): ../idp.script $(OBJS) makefile ../module.unx
+ifdef __MAC__
+	@printf ".section .ida, data\n.ascii \"IDA_MODULE_DESC:\"\n.ascii \"$(DESCRIPTION)\"\n" | $(AS) -o $(F)idadesc$(O)
+else
+	@echo ".section .ida;.ascii \"$(DESCRIPTION)\";" | $(AS) -o $(F)idadesc$(O)
+endif
+	$(CCL) $(OUTDLL) $(OUTSW)$@ $(OBJS) $(F)idadesc$(O) -L$(R) $(LINKIDA) $(PLUGIN_SCRIPT) $(ADDITIONAL_LIBS)
+	@rm -f $(F)idadesc$(O)
+
+include ../../objdir.unx

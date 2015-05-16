@@ -1,0 +1,94 @@
+_CFLAGS=$(__CFLAGS) -D__IDP__ -D__PLUGIN__
+__IDP__=1
+ifndef O
+include ../../allmake.unx
+endif
+
+ifdef O1
+OBJ1=$(F)$(O1)$(O)
+endif
+
+ifdef O2
+OBJ2=$(F)$(O2)$(O)
+endif
+
+ifdef O3
+OBJ3=$(F)$(O3)$(O)
+endif
+
+ifdef O4
+OBJ4=$(F)$(O4)$(O)
+endif
+
+ifdef O5
+OBJ5=$(F)$(O5)$(O)
+endif
+
+ifdef O6
+OBJ6=$(F)$(O6)$(O)
+endif
+
+ifdef O7
+OBJ7=$(F)$(O7)$(O)
+endif
+
+ifdef O8
+OBJ8=$(F)$(O8)$(O)
+endif
+
+ifdef O9
+OBJ9=$(F)$(O9)$(O)
+endif
+
+ifdef O10
+OBJ10=$(F)$(O10)$(O)
+endif
+
+ifdef O11
+OBJ11=$(F)$(O11)$(O)
+endif
+
+ifdef O12
+OBJ12=$(F)$(O12)$(O)
+endif
+
+ifdef O13
+OBJ13=$(F)$(O13)$(O)
+endif
+
+ifdef O14
+OBJ14=$(F)$(O14)$(O)
+endif
+
+ifdef O15
+OBJ15=$(F)$(O15)$(O)
+endif
+
+ifdef H1
+HELPS=$(H1)$(HH)
+endif
+
+OBJS=$(F)$(PROC)$(O) $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4) $(OBJ5) $(OBJ6) $(OBJ7) \
+     $(OBJ8) $(OBJ9) $(OBJ10) $(OBJ11) $(OBJ12) $(OBJ13) $(OBJ14) $(OBJ15)   \
+     $(ADDITIONAL_OBJS)
+
+SUBDIR=plugins/
+ifndef DONT_BUILD_PLUGIN
+BINARY=$(R)$(SUBDIR)$(PROC)$(PLUGIN)
+endif
+
+all:	objdir $(HELPS) $(BINARY) $(ADDITIONAL_GOALS)
+
+ifndef PLUGIN_SCRIPT
+ifdef __LINUX__
+PLUGIN_SCRIPT=-Wl,--version-script=../plugin.script
+endif
+ifdef __MAC__
+PLUGIN_SCRIPT=-Wl,-install_name,$(@F)
+endif
+endif
+
+$(BINARY): ../plugin.script $(OBJS) ../plugin.unx
+	$(CCL) $(OUTDLL) $(OUTSW)$@ $(OBJS) -L$(R) $(LINKIDA) $(PLUGIN_SCRIPT) $(ADDITIONAL_LIBS)
+
+include ../../objdir.unx

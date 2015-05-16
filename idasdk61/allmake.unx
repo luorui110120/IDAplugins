@@ -1,0 +1,347 @@
+#
+# The following environment variables may be defined to influence the build process
+#
+#  __LINUX__    build linux version
+#  __MAC__      build mac os x version
+#  __TARGET_MAC_HOST_LINUX__  - build mac os x version under linux
+#                               __MAC__ must be set, __LINUX__ must be unset
+#  __IPHONE__   build iphone version
+#  __BSD__      build bsd version
+#
+#  __EA64__     build 64-bit version (add 64-bit support, the application itself stays 32-bit)
+#  __X64__      build 64-bit version of IDA itself (with 64-bit support)
+#
+#  __ARM__      build for ARM (default is Intel)
+#
+#  NDEBUG       release build (otherwise debug build)
+#
+
+ifdef __IPHONE__
+__MAC__=1
+endif
+
+# our gcc for arm (on armlinux called wd) does not understand some warnings
+ifndef __ARM__
+NOARM_WARNS=-Wno-missing-field-initializers -fdiagnostics-show-option
+endif
+# turn on most warnings
+ifdef SUPPRESS_WARNINGS
+WARNS=-w
+else
+WARNS=-Wall -Wextra -Wno-sign-compare $(NOARM_WARNS)
+endif
+
+# use -fdiagnostics-show-option to learn warning codes
+# note: turn this on later: -Wshadow
+# note: turn this on later: -Wcast-qual
+# -Wlogical-op: generates wrong "logical ‘&&’ with non-zero constant will always evaluate as true"
+#      -Wpadded
+#      -Wredundant-decls
+# -Wmissing-format-attribute
+# -Wmissing-declarations
+# -Wsuggest-attribute=pure -Wsuggest-attribute=const -Wsuggest-attribute=noreturn
+
+ifdef __ARM__
+PROCFLAG=-D__ARM__
+TARGET_PROCESSOR_MODULE=arm
+OLD_GCC=1
+else
+TARGET_PROCESSOR_MODULE=pc
+endif
+COMPILER_NAME=gcc
+
+ifdef __MAC__
+  ifndef MACSDK
+    MACSDK=/Developer/SDKs/MacOSX10.5.sdk
+  endif
+endif
+
+ifndef QTDIR
+  ifdef __LINUX__
+    QTDIR=/usr/local/Trolltech/Qt-4.7.2/
+  else
+    QTDIR=/Users/Shared/Qt/4.7.2c/
+  endif
+endif
+
+ifdef NDEBUG
+  CCOPT=-O3 -ffunction-sections -fdata-sections -DNDEBUG -fomit-frame-pointer -fdefer-pop
+  OPTSUF=_opt
+  ifdef __MAC__
+   ifndef MAC_NO_DEAD_STRIP
+     DEAD_STRIP=,-dead_strip
+   endif
+   OUTDLLOPTS=-Wl,-S,-x$(DEAD_STRIP)
+  else
+   OUTDLLOPTS=-Wl,--strip-debug,--discard-all
+  endif
+else
+  CCOPT=-g -D_DEBUG
+  OPTSUF=
+  OUTDLLOPTS=
+endif
+
+ifdef __X64__
+  __EA64__=1
+  _SWITCH64=-D__X64__
+  __PIC__=1
+  X64SUFF=x
+  APPBITS=64
+else
+  APPBITS=32
+endif
+
+ifdef __EA64__
+  SUFF64=64
+  ADRSIZE=64
+  SWITCH64=$(_SWITCH64) -D__EA64__
+else
+  ADRSIZE=32
+endif
+
+ifdef __LINUX__
+  STDLIBS=-lrt -lpthread
+  SYSNAME=linux
+  # _FORTIFY_SOURCE=0 removes a reference to GLIBC2.11 symbol (setjmp)
+  ifndef OLD_GCC
+    VISFLAGS=-fvisibility=hidden -fvisibility-inlines-hidden
+  endif
+  SYS=$(PROCFLAG) -D__LINUX__ -D_FORTIFY_SOURCE=0 $(VISFLAGS) --shared
+  ifndef ALLOW_UNDEFS
+    NO_UNDEFS=-Wl,--no-undefined
+  endif
+  _OUTDLL=-Wl,--gc-sections $(NO_UNDEFS) $(OUTDLLOPTS)
+  ifdef __ARM__
+    BUILD_ONLY_SERVER=1
+    TARGET_PROCESSOR_NAME=arm
+    DIRSUFF=.lnx
+    MODSUFF=.ilx
+    PLGSUFF=.plx
+    LDRSUFF=.llx
+    DLLSUFF=.so
+  else
+    ifdef __X64__
+      TARGET_PROCESSOR_NAME=x64
+      ARCH_CFLAGS=-m64
+      ASM_ARCH_CFLAGS=--64
+      DIRSUFF=.lnx64
+      MODSUFF=.ix
+      PLGSUFF=.px
+      LDRSUFF=.lx
+      DLLSUFF=x.so
+    else
+      TARGET_PROCESSOR_NAME=x86
+      ARCH_CFLAGS=-m32
+      ASM_ARCH_CFLAGS=--32
+      DIRSUFF=.lnx
+      MODSUFF=.ilx
+      PLGSUFF=.plx
+      LDRSUFF=.llx
+      DLLSUFF=.so
+    endif
+  endif
+else
+ifdef __BSD__
+  TARGET_PROCESSOR_NAME=x86
+  STDLIBS=-lpthread
+  SYSNAME=bsd
+  # removing --shared makes it impossible to build shared libraries
+  # but we need to build only ida.key decryptor under bsd
+  SYS=$(PROCFLAG) -D__BSD__ # --shared
+  _OUTDLL=-Wl,--no-undefined $(OUTDLLOPTS)
+  DIRSUFF=.bsd
+  MODSUFF=.ibsd
+  LDRSUFF=.lbsd
+  PLGSUFF=.pbsd
+  DLLSUFF=.so
+  MAKE=/usr/local/bin/gmake
+else
+  ifndef MAC_EXPORT_ALL
+    SYS=$(PROCFLAG) -D__MAC__ -fvisibility=hidden -fvisibility-inlines-hidden
+  else
+    SYS=$(PROCFLAG) -D__MAC__
+  endif
+  _OUTDLL=-dynamiclib -current_version 1.0 -compatibility_version 1.0 -single_module $(OUTDLLOPTS)
+  DLLSUFF=.dylib
+  ifdef __IPHONE__
+    TARGET_PROCESSOR_NAME=arm
+    SYSNAME=iphone
+    DEV=/Developer/Platforms/iPhoneOS.platform/Developer
+    SDK=$(DEV)/SDKs/iPhoneOS2.2.sdk
+    CC = $(DEV)/usr/bin/gcc-4.0
+    CCX = $(DEV)/usr/bin/g++-4.0
+    ASM_ARCH_CFLAGS = -arch arm
+    ARCH_CFLAGS = $(ASM_ARCH_CFLAGS) \
+    -B"$(SDK)" \
+    -I"$(SDK)/usr/include" \
+    -I"$(SDK)/usr/include/c++/4.0.0" \
+    -I"$(SDK)/usr/include/c++/4.0.0/arm-apple-darwin8" \
+    -I"$(SDK)/usr/lib/gcc/arm-apple-darwin9/4.0.1/include" \
+    -D_DARWIN_NO_64_BIT_INODE=1 \
+    -L"$(SDK)/usr/lib" \
+    -mmacosx-version-min=10.3
+    DIRSUFF=.mac_iphone
+    MODSUFF=.imc
+    LDRSUFF=.lmc
+    PLGSUFF=.pmc
+    NO_EXECUTE_TESTS=1
+  else
+    SYSNAME=mac
+    ifdef __X64__
+      TARGET_PROCESSOR_NAME=x64
+      DIRSUFF=.mac64
+      MODSUFF=.im
+      PLGSUFF=.pm
+      LDRSUFF=.lm
+      DLLSUFF=x.dylib
+      MFLAG  =-m64
+    else
+      TARGET_PROCESSOR_NAME=x86
+      DIRSUFF=.mac
+      MODSUFF=.imc
+      PLGSUFF=.pmc
+      LDRSUFF=.lmc
+      MFLAG  =-m32
+    endif
+    ifdef __TARGET_MAC_HOST_LINUX__
+      ASM_ARCH_CFLAGS=-I/opt/mac/include/c++/4.0.0 -I/opt/mac/include/c++/4.0.0 -I/opt/mac/include/c++/4.0.0/i686-apple-darwin10 -I/opt/mac/lib/gcc/i686-apple-darwin8/4.0.1/include
+    else
+      SYSROOT=-mmacosx-version-min=10.5 --sysroot=$(MACSDK)
+      ifdef __X64__
+        ASM_ARCH_CFLAGS=-arch x86_64
+      else
+        ASM_ARCH_CFLAGS=-arch i386
+      endif
+    endif
+    ARCH_CFLAGS=$(ASM_ARCH_CFLAGS) $(SYSROOT) $(MFLAG)
+  endif
+  DYLSUF=$(SUFF64)$(DLLSUFF)
+endif
+endif
+OUTDLL=$(SYS) $(_OUTDLL)
+DEVKEY_TO_BIN=1
+
+ifndef IDA
+IDA=$(HOME)/idasdk/61/
+endif
+
+BINDIR=$(TARGET_PROCESSOR_NAME)_$(SYSNAME)_$(COMPILER_NAME)$(OPTSUF)
+SYSDIR_NOOPT=$(TARGET_PROCESSOR_NAME)_$(SYSNAME)_$(COMPILER_NAME)_$(ADRSIZE)
+SYSDIR=$(SYSDIR_NOOPT)$(OPTSUF)
+# output directory for target platform
+R=$(IDA)bin/
+# input directory with existing build utilities
+RS=$(IDA)bin/
+# output directory for new build utilities
+RT=$(IDA)bin/
+C=$(RS)cfg/
+H=$(RS)
+RI=$(RS)idc/
+I=$(IDA)include/
+
+HH=.hhp
+HS=.hls
+O=.o$(X64SUFF)$(ADRSIZE)
+A=.a
+B=$(X64SUFF)$(SUFF64)
+BS=$(X64SUFF)$(SUFF64)
+IDP=$(SUFF64)$(MODSUFF)$(SUFF64)
+LDR=$(SUFF64)$(LDRSUFF)$(SUFF64)
+PLUGIN=$(PLGSUFF)$(SUFF64)
+CONLY=-c
+
+# we can not use strict-aliasing because we do have
+# pointers of different type pointing to the same location in many cases.
+CFLAGS=$(CCOPT) $(SYS) $(SWITCH64) -I$(I) -DNO_OBSOLETE_FUNCS $(WARNS) $(_CFLAGS) \
+       $(ARCH_CFLAGS) $(PIC) -pipe -fno-strict-aliasing -pthread
+LIBDIR=$(IDA)lib/$(SYSDIR_NOOPT)
+OBJDIR=obj/$(SYSDIR)
+F=$(OBJDIR)/
+L=$(LIBDIR)/
+
+CP=cp -f
+MV=mv
+RM=rm
+AS=as
+MKDIR=-@mkdir 2>/dev/null
+
+ifdef __IPHONE__
+  O=.o$(ADRSIZE)_iphone
+  A=.a_iphone
+  R=$(IDA)bin/iphone/
+  RT=$(IDA)bin/iphone/
+  AS=$(DEV)/usr/bin/as -arch arm
+  STDLIBS=-lpthread -liconv
+else
+  AS=as $(ASM_ARCH_CFLAGS)
+  ifdef __MAC__   # plain mac
+    ifndef __TARGET_MAC_HOST_LINUX__
+      STDLIBS=-lpthread -liconv
+    endif
+  endif
+endif
+
+ifndef __IPHONE__
+  ifdef __LSB__
+    LSBOPTS=--lsb-shared-libs=ida:tvision:clp
+    CC=/opt/lsb/bin/lsbcc --lsb-cc=gcc $(LSBOPTS)
+    CCX=/opt/lsb/bin/lsbc++ --lsb-cxx=g++ $(LSBOPTS)
+  else
+    ifdef __TARGET_MAC_HOST_LINUX__
+      CC=/opt/mac/bin/i686-apple-darwin8-gcc
+      CCX=/opt/mac/bin/i686-apple-darwin8-g++
+      _OUTDLL=-dynamiclib $(OUTDLLOPTS)
+    else
+      CC=gcc
+      CCX=g++
+    endif
+  endif
+endif
+
+ifdef __LINUX__
+CCL=$(CCX) $(ARCH_CFLAGS) $(STDLIBS)
+else
+CCL=$(CCX) $(CFLAGS) $(STDLIBS)
+endif
+
+HLIB=$(RS)_ida.hlp
+DUMB=$(L)dumb$(O)
+# NB: DLLSUFF already includes X64SUFF
+IDALIB=$(R)libida$(SUFF64)$(DLLSUFF)
+LINKIDA=-lida$(SUFF64)$(X64SUFF)
+LINKCLP=-lclp$(X64SUFF)
+
+ifdef __PIC__
+  PIC=-fPIC
+endif
+
+R32=$(R)
+B32=$(B)
+
+AR=$(RS)qar.sh rus
+HC=$(R)ihc$(B)
+STM=$(R)stm$(B)
+PYTHON=/usr/bin/python
+NASM=/usr/bin/nasm
+SWIG=/usr/bin/swig
+OUTSW=-o #with space
+OBJSW=-o #with space
+
+CLPLIB=$(R)libclp$(DLLSUFF)
+
+.SUFFIXES: $(HH) $(HS) .c .h .cpp .hpp $(O) .at $(A) .grm .cfg
+.PHONY: all includes Goal goal config cfg $(ADDITIONAL_GOALS)
+
+$(F)%$(O): %.cpp | $(F)
+	$(CCX) $(CFLAGS) -c $(OBJSW)$@ $<
+
+$(F)%$(O): %.c | $(F)
+ifdef DONT_FORCE_CPP
+	$(CC) $(CFLAGS) -c $(OBJSW)$@ $<
+else
+	$(CCX) $(CFLAGS) -c $(OBJSW)$@ $<
+endif
+
+.hls.hhp: | $(HC)
+	$(HC) -t $(HLIB) -i$@ $<
+

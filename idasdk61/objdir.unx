@@ -1,0 +1,5 @@
+# this makefile creates the output directories for object/library files
+
+objdir $(OBJDIR) $(LIBDIR):
+	-@if [ ! -d "$(OBJDIR)" ] ; then mkdir -p 2>/dev/null $(OBJDIR) ; fi
+	-@if [ ! -d "$(LIBDIR)" ] ; then mkdir -p 2>/dev/null $(LIBDIR) ; fi

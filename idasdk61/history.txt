@@ -1,0 +1,599 @@
+
+Version 4.18
+------------
+
+- PR_BINMEM is not used anymore
+
+
+Version 4.20
+------------
+
+- ieee_realcvt() function is added
+
+- AS2_STRINV is added
+
+- choose_ioport_device() has 2 parameters
+
+- better handling of inf.wide_high_byte_first
+
+- OutValue(..., OOF_ADDR) accepts dt_code as dtyp.
+
+- 0x80, 0x8000, 0x80000000 are considered as signed by default in OutValue()
+
+Version 4.21
+------------
+
+- set_dummy_name has 2 parameters
+
+Version 4.3
+-----------
+
+- search.hpp is included
+
+Version 4.5
+-----------
+
++ IDA environment variable is not required to build modules anymore
++ added comments about filling the op_t structure; fixed some typos in netnode.hpp
++ COLOR_INV is added
++ hidden plugins are supported: PLUGIN_HIDE flag is introduced
++ idaw choose() function respects the batch mode
++ negative buffer sizes are handled properly (str2user, user2str, pack_ds)
++ new function flag FUNC_BOTTOMBP. It means that the frame pointer is equal to the stack pointer in the function and it points to the bottom of the stack frame.
++ ph.flag PR_CHK_XREF: don't allow near xrefs between segments with different bases. This flag is used for IBM PC only.
++ read_ioport_device() function reports about configuration files with no devices
++ renamed FIXUP_PTR32->FIXUP_PTR16, FIXUP_PTR48->FIXUP_PTR32
++ the user-defined data supplied to linearray_t is documented in kernwin.hpp
++ up to 16 source files for plugins
++ setBreak() function is added
++ the processor extension callbacks are called for all instructions, not only when cmd.itype >= CUSTOM_CMD_ITYPE
++ find_ioport_bit() returns NULL is the bit name is NULL
++ rebase_program() is added. This function allows to shift the whole program in the memory. Since rebasing the program involves correcting the relocated bytes, the file loader takes part of the job. File loaders may have "move_segm" callback functions now.
++ now a good behaving procesor module handles the ph.move_segm event
++ numop2str(): output instruction operand with optional leading zeroes; is_lzero(),toggle_lzero() to modify the display of leading zeroes; inf.s_genflags introduced; atoa, b2a32, b2a64, b2_width function parameters has been changed
++ move_segm_start(), set_segm_start(), set_segm_end() may destroy the adjacent segment if necessary; ADDSEG_QUIET flas has been added
++ new type of segments: SEGM_DEBUG. Used in the debugger.
++ get_sourcefile() function prototype has been changed. Now it returns the range information.
++ hidden_area_t and functions to work with it are introduced
++ byteValue() function is renamed to _byteValue(); this function should not be used anymore if possible. The reason is that it works only with 8-bit processors and doesn't take into account possible debugger side-effects.
+BUGFIX: qmakepath() could generate file names with several backslashes in them
+
+Version 4.6
+-----------
+
+NOTE: IBM PC register encodings are changed! See intel.hpp for the details.
+
++ prototypes of some processor module provided functions are changed
++ moves.hpp, sistack.hpp are included into the sdk
++ dbg.hpp: the first version of debugger api
++ idd.hpp: debugger plugin api has been changed
++ all out.../Out... functions check the output buffer boundaries (some other functions too).
+  It means that all old processor modules should be modified to support the new model:
+    - u_line variable disappeared
+    - init_output_buffer/term_output_buffer are added
+    - tag_... functions have additional parameter
+    - many other functions have additional parameter to check
+      the output buffer size
+  The modifications are not heavy - a normal module would require the replacement of 2 lines, the initialization of u_line and termination.
+  The new model allows to detect the buffer overflows in the processor modules.
++ MD5 functions are available
++ calcexpr_long() accepts a pointer to uval_t as well to sval_t
++ can compile plugins with Visual C++ command line compiler (available either in Visual C++ 6.0/7.0 or as free with .NET framework SDK + Plateform SDK)
++ construct_macro() function is added
++ do_name_anyway() does not complain to the user about bad names anymore
++ fixed a bug in swap64() and swap128()
++ foreach_strmem() and get_struct_member() function prototypes are changed to handle the member field names
++ gcc can be used to compile IDA plugins, loaders, and modules
++ graphing functions are available in IDA API; added ctype.h to pro.h
++ import_node is available in IDA API
++ int128 type is added
++ is_call_insn() function and callback is introduced. The callback should be implemented by the processor modules with unusual call instructions (like PowerPC)
++ more floating point functions are exported
++ new function: reftype_t get_default_reftype(ea_t ea);
++ all out.../Out... functions check the output buffer boundaries
++ tag_skipcodes() function is added
++ zip compression handling functions are added to the API
+
+Version 4.6 SP1
+---------------
+
++ floating point conversion functions have additional parameter: the output buffer size
++ generate_disasm_line() has an additional parameter. Currently it can be used to force instruction decoding even if there is no instruction at the specified address
++ open_url() function is added
++ qfscanf() is added
++ debugger: functions to list, attach and detach processes are available for plugins
++ get_tilpath() accepts the output buffer as a parameter
++ added various keywords to display more complex message boxes (warning(), info(), etc)
+
+Version 4.7
+-----------
+
++ HIGH22 and LOW10 offset types are generalised to be VHIGH and VLOW. The processor module can specify the widths of these fixups in the ph.high_fixup_bits field. Currently they are used in the SPARC and HPPA processors.
++ NULL value may be passed as the tester function to the nexthat, prevthat functions. It means that any address satisfies the criterium.
++ PR_FULL_HIFXP is introduced. It means: VHIGH fixup type expects the operand value to be equal to the full address of the target, not only the high bits. Used for HPPA HIGH21 fixup types.
++ UI list functions (choose(), choose2(), ...) now support multiple selection => the delete callback prototype was changed accordingly (older plugins can simply return 'true' to remain compatible)
++ added possibility to pass command line options to plugins (get_plugin_options)
++ added set/get_idc_func_body() to avoid frequent recompilation of IDC functions
++ debugger: enable_XXX_trace() functions can now disable tracing but conserve trace-over breakpoints
++ gen_use_arg_types() is added
++ lread() function is added; this function should be used in the loaders instead of eread(). The lread() function verifies if the read is ok, if not, it informs the user about it and asks if he wants to continue. If the user does not want to continue, the loader_failure() function is called
++ regex_match() to match regular expressions is added
++ removed support for the watcom compiler
++ set_idc_func() to add/remove IDC functions written in C++
++ the kernel knows about macroinstructions (cmd.flags |= INSN_MACRO); fixup information for macroinstructions is handled in a special way: partial fixups are combined into one full fixup
++ AS2_BYTE1CHAR is added: for wide byte processors, one character per byte
++ added the FILE option to the AUTOHIDE keyword for message boxes, to save hidden message box results to IDAMSG.CFG
++ get_next/prev_member_idx() functions are added; guess_func_type() understands stacks growing up (not tested yet)
+
+Version 4.8
+-----------
+
+The IDA API has been considerably modified. There were 2 reasons for this:
+
+        - a vulnerability in the version 4.7 has been found. Because of this
+        the API was revised with the security in mind and many functions
+        got additional parameters (like the size of the output buffer).
+        We banned some potentially vulnerable functions from IDA.
+        Now you can not use sprintf, strcpy and similar functions in the
+        modules. However, if you still want to use them, please define
+        the USE_DANGEROUS_FUNCTIONS preprocessor symbol during compilation.
+
+        The replacement functions behave slightly differently than their standard
+        counterparts. Please read the descriptions. While the differences are
+        minor, they are still important (for example, qstrncpy() always
+        puts the terminating zero at the end and qstrncat() accepts the size
+        of the output buffer as the third parameter).
+
+        - IDA 4.8 can load and run remote files. For this, the file loaders
+        were modified to work with "linput_t *" type instead of the "FILE *".
+        The linput_t means 'loader input source'. The kernel opens a local
+        or remote file and passes the handle to the file loader. The file loader
+        does not know whether the file is local or remote, it just reads it
+        as before using file manupilation functions provided by the kernel.
+        So, qfseek should be replace by qlseek, qfread by qlread and so on.
+        This modification is quite straightforward and should not pose any
+        problems.
+
+
+In general, we tried to modify the API in the way that breaks the compilation
+process instead of silently modifying the function behaviour. So, the task of
+porting the existing modules/loaders/plugins to the new version is quite
+simple - try to compile the module. Get rid of the compilation errors by
+adding new parameters to the function calls, or replacing the old function names
+with the new names. If your compilation is successful, then the new module should
+work with the new version.
+
+Please see how the samples in the SDK were modified to have an idea how to modify
+your custom modules.
+
+We were also forced to modify the debugger API to support remote file loading, and
+better catch network errors. Check the idd.hpp file for the details.
+
+Also the method to obtain the pointer to the debugger description has
+been changed. We don't use the run() method anymore.
+Please see the sample linux debugger.
+
+Below is the list of detailed modifications made to the API:
+
++ added functions to manipulate XML values in the internal XML tree
++ IDC functions can be called without a database. Built-in functions have a special flag EXTFUN_BASE telling that they must be called with an open database
++ SetFileExt, FileExt, hasExt functions are renamed as set_file_ext, make_file_ext, get_file_ext. Additional parameters to check buffer overflows are added
++ added a possibility to tell 'this is definitely not a thunk function' in the ph.is_jump_func notification for the processor modules; this leads to the slight API change which should not pose any problems with the existing modules
++ added more segment alignment codes
++ added netnode::end() and netnode::prev() functions
++ additional parameter for parse_type() - the name of the declared variable
++ bit masks are supported by get_name_value()
++ find_error(), find_notype(), tag_skipcode() functions are added
++ functions dealing with the signness and bitwise negation are revised; now the bitwise negation has a bit in the flags which allows to use it in the structure and enum definitions
++ gen_idc_file() is removed; use gen_file() instead
++ introduced 'stack variable scaling factor'. Used for processors which implicitly scale stack variable references, e.g. tms320c55
++ introduced the notion of 'ephemeral' segments: debugger segments which are not loader segments. The kernel does not analyze ephemeral segments.
++ introduced the notion of a 'loader' segment. All segments created by loaders have this attribute.
++ is_32bit_func() is replaced by get_func_bitness()
++ leading_zero_important() function has been added
++ only debugger segments can be created when the debugger is active. you can use change_segment_status() to convert debugger segments to regular segments afterwards.
++ ph.kernel_config_loaded callback has been added - for plugins who want to set their own config settings
++ removed the ph.align_size() callback from the type system callbacks.
++ shortened some field names in the debugger related structures (thread_id -> tid, etc)
++ string list is available for plugins. see strlist.hpp
++ new sdk function set_sreg_at_next_code(); ph.setsgr parameters are changed
++ introduced AS2_COLONSUF for assemblers with :xx suffixes in the address expressions
++ renamed 'analyse' -> 'analyze' in all function names
++ added auto_queue_empty callback
++ choose_ioport_device() has no default parameters (so we have a compilation error instead of wrong runtime behaviour)
++ get_member_ti() accepts NULL as the buffer
++ interface to the file loader has been changed. Instead of FILE *, now we use linput_t * (see functions in diskio.hpp). linput_t allows to work with local and remote files.
++ modified the interface of many functions to avoid buffer overflow vulnerability problems
++ new function: sanitize_file_name()
++ renamed cmangle_name() -> decorate_name()
++ splitSRarea() has been removed. Use splitSRarea1()
++ added func_t * to the display_flow_graph()
++ added qisdir() function
++ added qvector and qstring template classes to IDA API
++ added a comment about the necessity of using the invalidate_... functions from the debugger notification callbacks
++ method to obtain the debugger description has been changed: now the init() function of a debugger plugin must fill the 'dbg' global variable if it wants to stay in the memory; the run() method is not used for the debuggers anymore
+
+Version 4.9
+-----------
+
+IDA API was improved for thread-safety but this work has not been finished.
+Biggest problems arise from the functions returning pointers to internal IDA objects.
+The kernel may destroy these objects any time and this will lead to a dangling pointer.
+In the single-thread model things work well because the kernel takes special measures
+to keep recently requested objects in the memory, but this approach can not work
+in the multi-threaded environment. I guess we will need to add new 'multi-thread friendly'
+versions of existing IDA APIs which do not return pointers but fill the specified buffer.
+So in the future you might expect a new function like
+
+bool get_func_ex(ea_t ea, func_t *buffer_to_fill);
+
+instead of the current
+
+func_t *get_func(ea_t ea);
+
+But since we freeze IDA API today, the old functions will still be available. When (if)
+we make a thread-safe version of the kernel, the old functions should not be used in the
+multi-thread environments.
+
+Many functions have also been modified to return ssize_t instead of char *.
+There are 2 reasons for that: first, returning pointers is considered as a bad idea;
+second, having ssize_t (the length of the answer or -1) makes it easy to fill the output
+buffer and move the pointer. Typical code sequence might be
+
+ char buf[MAXSTR];
+ char *ptr = buf;
+ char *end = buf + sizeof(buf);
+ ssize_t len = ida_api_function(..., ptr, end-ptr);
+ if ( len <= 0 )
+   goto error;
+ ptr += len;
+ // and so on...
+
+As usualy we tried to modify the functions in such a way that the compiler will report an
+error for everything that requires your attention. Most of the time the required
+modifications will be simple and standard. Please check the prototype and description of
+the culprit function to deduce the required modifications.
+
+Below is the list of detailed modifications made to the API:
+
++ SDK: IDA API has been frozen for future binary compatibility
++ SDK: add_regvar() modifies existing regvar definitions to define a new variable which overlaps the existing variables
++ SDK: add_sourcefile() function does not fail if there already was a source file defined at the specified range; in this case it will delete or modify the old definitions to make a hole big enough to hold the new file
++ SDK: add_stkvar2() function to add stack variables from plugins; tds plugin uses it
++ SDK: added a flag to allow the use of constructs not supported by the target assembler. It is INFFL_ALLASM bit in inf.s_genflags. The inf.use_allasm() function checks this bit
++ SDK: areacb_t::make_hole() function can be used to make holes in area definitions
++ SDK: AUTOHIDE NONE and similar keywords in the dialog box messages can appear not only in the format string but also in the final string as well
++ SDK: closing_comment() to get the comment closing sequence
++ SDK: debugger structures are aligned at 4 bytes to avoid problems on ARM processor
++ SDK: is_ret_insn() function and callback are added
++ SDK: make_visible_name() has additional argument - output buffer size
++ SDK: new function calc_bare_name() to get the smallest possible form of a name (try to undecorate and demangle)
++ SDK: new function parse_types(); IDC: new function ParseTypes()
++ SDK: new function: get_flags_ex(). The new function get_flags_novalue() built on top of get_flags_ex() does not return the MS_VAL and FF_IVL fields of the flags and therefore is much faster for remote debugging; it is not exported yet (todo later!) but the kernel uses it during the segment deletion which improves the speed
++ SDK: ph.guess_memory_model is replaced by ph.setup_til
++ SDK: rotate_left() function is exported
++ SDK: SetFlags, SetFlbits, ClrFlbits() functions do not modify the MS_VAL and FF_IVL flag fields; uFlag global variable does not contain these fields; the kernel updates the uFlag automatically (if the modified address is equal to cmd.ea), so there is no need to update uFlag manually in the emulator function of processor modules
++ SDK: setup_selector() allocates a new selector for values not fitting in 16 bits only for IBM PC. Other processors will use 32-bit segment bases
++ SDK: the processor name is stored in the debugger description structure to allow instant debugging for processors different from IBM PC
++ SDK: added new data type: 3byte; doData() function is removed because it can be replaced by do_data_ex()
++ SDK: btoa..() functions accept a buffer for the answer; atoa() function is obsolete and removed (use ea2str())
++ SDK: close_chooser() to close open non-modal list views
++ SDK: dbg->stopped_at_debug_event() does take require 'event' as the parameter;
++ SDK: elnum_t is replaced with int
++ SDK: func_does_return() is added; it is better to use this function instead of examining FUNC_NORET flag directly
++ SDK: get_name_expr() accepts a buffer for the answer and returns the answer length; new function: out_name_expr() is easier to use in the processor modules; append_disp() is replaced with print_disp() which does not append but simply uses the given buffer and returns the answer length
++ SDK: IDC compile/run functions return the error message in the specified buffer (before it was a in a static storage); the return value is a bool meaning success of the operation
++ SDK: interface to netnode functions returning big objects has been changed. Now these functions put the results into the specified bugger. This is a big change in IDA API leading to the modifications of many functions. This change is a small step in the direction of multithreaded model.
++ SDK: is_alloca_probe notification code has been added
++ SDK: lexical analyzer is thread-safe and can be called from several threads for different inputs
++ SDK: new function qerrstr() and qerrcode()
++ SDK: nexthat, prevthat functions accept 'user_data' parameter for thread-safe handling
++ SDK: now the memory config and contents are not automatically refreshed at each debug notification; the plugin must call invalidate_dbgmem_config() and/or invalidate_dbgmem_contents() to get the current view
++ SDK: PLUGIN_PROC and PLUGIN_FIX flags are added; plugin management is moved to the kernel
++ SDK: refresh_navband() to refresh the navigation band
++ SDK: standard file functions like fopen() are not visible by default - use qfopen() and similar functions; the standard functions can be enabled by the USE_STANDARD_FILE_FUNCTIONS preprocessor symbol
++ SDK: strarray() accepts a buffer for the answer; qstrerror() accepts a buffer for the answer; ivalue1,2,3 functions are deleted
++ SDK: take_memory_snapshot() function is added
++ SDK: term_database() function is added
++ SDK: zip_inflate/zip_deflate() functions accept 'user_data' parameter
++ SDK: added get_reg_name() to get the name of the specified register
++ SDK: bring_debugger_to_front() is added
++ SDK: dbg_trace can be used to filter trace events
++ SDK: find_text() function is exported
++ SDK: get_first_module(), get_next_module() debugger functions are added
++ SDK: new dbg_process_attach & dbg_process_detach notifications are generated in all cases ([request_]attach|detach_process() or not)
++ SDK: new function add_menu_item(), del_menu_item() (only in the gui version for the moment)
++ SDK: the asynchronous start_process() command now terminates as soon as the process is started and generates a 'dbg_process_start' notification
++ SDK: ua_emu() and ua_out() functions are not in IDA API anymore
++ SDK: user-defined form buttons can be configured in the dialog definition
+
+post release fix: fixed problems in pro.h
+
+Version 5.0
+-----------
+
+IDA 5.0 introduces the new graph based interface. The corresponding data
+definitions and functions are in graph.hpp. These definitions heavily use
+STL and virtual functions and very probably not compatible with the compilers
+other than BCB v6.0.
+
+There is a sample graph plugin 'ugraph' that demonstrates how to use the new API.
+
+Below is the list of detailed modifications made to the API:
+
++ SDK: calc_bare_name() has been improved to handle __imp_ and c++ mangled names
++ SDK: guess_func_type() takes into account the number of purged bytes from the stack: if the tail parameters were not used by the function and therefore were not created by ida, we still create dummy arguments for the in the function type
++ SDK, IDC: del_segm() accepts a combination of bits as the second parameter
++ SDK: added a flag to flow_chart_t to avoid computing external blocks
++ SDK: added processor_t::gen_asm_or_lst to customize asm or lst file generation
++ SDK: added processor_t::is_insn_table_jump to determine if an instruction is really a table jump or call
++ SDK: added SDL_HIDETYPE bit for segments - to hide the segment type from the disassembly listing
++ SDK: added ui_create_tform and other callbacks to manipulate mdi child windows from plugins
++ SDK: analyze_area() function can be applied to debugger segments as well; before it was skipping them
++ SDK: areacb_t::for_all_areas() function to enumerate all areas in the specified range
++ SDK: autoIsOk() would return false for old database when called from ph.oldfile
++ SDK: callback out_src_file_lnnum to generate source file name and line number directives
++ SDK: if inf.lowoff == BADADDR, no operand will be considered as 'void' operand
++ SDK: if Namechars[] is empty, all characters are enabled in names
++ SDK: if public or weak keywords are defined as empty strings, then IDA does not display the corresponding directives at all
++ SDK: introduced new event processor_t::auto_empty_finally to handle the end of autoanalysis for efficiently
++ SDK: new function entab() to replace spaces by tabulations
++ SDK: new function qmake_full_path()
++ SDK: ph.get_autocmt notification to generate dynamic predefined comments for instructions
++ SDK: 4 new processor modules with the source code - donation of an IDA user
++ SDK: new function get_compiler_name()
++ SDK: added read_user_config_file() function
+
+Version 5.1
+-----------
+
+We tried to keep source code level and binary code level compatibility with IDA v5.0.
+We believe that old plugins and processor/loader modules will work nicely with v5.1
+(there might be some bugs, of course).
+
+However, some functions are now declared obsolote. You are still free to continue to use
+them in your modules. For new modules, please define the NO_OBSOLETE_FUNCS preprocessor
+symbol for the compiler. This will hide all obsolete definitions from the compiler.
+
+If you succeed to recompile your module, it should work without conceptual changes,
+unless it assumes something that does not hold anymore. For example, the nop instruction
+for x86 used to be a single byte instruction with the opcode 0x90. This is not the case
+anymore because Intel has introduced a multibyte nope with an operand.
+
+We also changed the build environment a bit to support the Mac OS X.
+There are also more options to fine rune the environment. See the defaults.mk
+and makeopts.mk files.
+
+The graph API has been changed as promised. Now it is (hopefully) compiler independent.
+
+The SDK includes the source code of the Mac OS X debugger.
+
+Have fun, and send your suggestions to us!
+
++ SDK: added get_bg_color callback: plugins can dynamically change the background colors
++ SDK: new function dummy_name_ea() to detect dummy names
++ SDK: added a callback to generate hints for any viewer (idaview or custom)
++ SDK: added a new group of events to detect database modifications. not all database modification generate events yet but most of them do.
++ SDK: added get_kernel_version() to get ida version
++ SDK: added save/restore pushinfo callbacks for function prolog information
++ SDK: choose2() supports column types. They are specified with CHCOL_.. bits in the widths array.
++ SDK: function to create and manipulate custom views are added
++ SDK: set_visible_func() affects all chunks of the function
++ SDK: parse_types2() allows to specify the pack alignment explicitly
++ SDK: added a callback to generate hints for any viewer (idaview or custom)
++ SDK: added a new group of events to detect database modifications. not all database modification generate events yet but most of them do.
++ SDK: added get_kernel_version() to get ida version
++ SDK: functions to create and manipulate custom views are added
++ SDK: added the qflow_chart_t class for more control on flow charts
++ SDK: added a callback for the graphs: grcode_destroyed. It is generated when the displayed graph is destroyed.
++ SDK: added a callback to preprocess flow charts before displaying them in the graph view (processor_t::preprocess_chart)
++ SDK: added a hotkey parameter to viewer_add_menu_item()
++ SDK: added add_qword() to facilitate 64-bit relocation application
++ SDK: added AFL_FIXED_SPD flag to denote instruction with fixed stack pointer delta. This flag is set at the instruction which has a fixed effect on SP (CORRECTION: it is applied to the address past the instruction)
++ SDK: added callbacks to generate custom hints
++ SDK: added decode_preceding_insn() to decode instruction which precedes the specified address in the execution flow
++ SDK: added eavec_t and intvec_t convenience typedefs
++ SDK: added events for function creation, deletion, and boundary modification
++ SDK: added FUNC_SP_READY flag to denote functions with SP analysis performed; removed ua_emu() and made automatic reanalysis of new instructions; added verify_sp notification to perform sp-analysis
++ SDK: added function_item_iterator::decode_preceding_insn() to decode instruction in the reverse execution order
++ SDK: added get_current_thread() function
++ SDK: added get_funcarg_size() to calculate the size of a function argument
++ SDK: added helper alignment template functions align_up and align_down
++ SDK: added non-standard functions like add_unique() and del() to the qvector template
++ SDK: added possibility to specify custom navigation band colorizer
++ SDK: added PR_ALIGN_INSN for some processors; this flag allows IDA to create 'alignment' instructions (e.g. nop) arbitrarily. In general it is a bad idea because such an instruction may spoil the listing by triggering the creation of other wrong instructions
++ SDK: argloc_t definition has been modified to hold more information and be easier to work with; the old definition is still available if the NO_OBSOLETE_FUNCS is not defined
++ SDK: build_funcarg_arrays() converts array arguments into pointers
++ SDK: do_unknown() and do_unknown_range() accept flags as the last parameter instead of a simple bool. This allows us to specify more options. One new option: DOUNK_DELNAMES will delete the names in the specified range
++ SDK: FUNC_PURGED_OK flag has been introduced to mark functions which certainly do not modify the stack; sp-analysis is improved to use this flag
++ SDK: gdl_graph_t has 2 more virtual functions: get_node_color and get_edge_color
++ SDK: get_data_type_size_by_flags() is optimized not to access the database if not really necessary
++ SDK: get_data_type_size_by_flags() is renamed as get_data_elsize()
++ SDK: get_off_expr and get_name_expr functions accept one more flag: GETN_NODUMMY. This flag can be used to verify that the expression can be built without really creating dummy names in the database
++ SDK: get_prev_func_addr() and get_next_func_addr() functions have been added. they return the previous/next address in the function strictly linearly
++ SDK: graph interface has been changed to use the qvector template. It is with accessible from other compilers (was only from BCB6)
++ SDK: if expand_struc() does not change anything in the structure definition because the offset is bigger than the structure size, it is not considered as an error
++ SDK: introduced a bit for user defined type information attached to program items (AFL_USERTI). Types derived by IDA will not have this bit.
++ SDK: introduced a flag for 'alignment' instructions: is_align_flow(). It is used to denote control flow created only because of an alignment instruction
++ SDK: introduced the qtype file to keep type information in the dynamic memory
++ SDK: is_type_void() now checks if the type is really 'void'; before it was reporting 'true' on partial types based on the BT_VOID symbol; the old version of this function is still available if the NO_OBSOLETE_FUNCS symbol is not defined at the compilation time
++ SDK: made graph interface compatible with compilers other than BCB6; for that, removed the bn memory of the flow_chart_t class
++ SDK: new event 'determined_main' is generated when the main() function of the application is determined
++ SDK: new event: loader_elf_machine to handle elf files of unknown machine types
++ SDK: new event: treat_hindering_item. This event allows plugins to handle the situation when an old item hinder the creation of a new item (e.g. a wrong data item prevents the creation of an instruction)
++ SDK: new function add_auto_stkpnt2() which replaces add_auto_stkpnt(). The old function should not be used anymore since it does not take into account the function boundaries
++ SDK: new function add_til2() with more flags
++ SDK: new function calc_switch_cases() to calculate switch case values and targets; jptcmn.cpp file has been modified a lot: if you used it, then take the old version from sdk5.0 or update your module
++ SDK: new function get_func_nargs(). It returns the number of arguments if the given function type
++ SDK: new function make_array_type() to create array types
++ SDK: new function qlgetz() to read zero terminated ascii strings from the input stream
++ SDK: new function set_compiler() to set the current compiler
++ SDK: new function set_purged() to specify a new value for the "purged bytes" attribute and reanalyze the relevant functions
++ SDK: new notification event: processor_t::renamed. It is generated when a new name is given to a byte
++ SDK: print_type_to_one_line() can be called with buf==NULL and bufsize==0 to find out the required buffer size
++ SDK: QASSERT() and interr() debugging helpers are added
++ SDK: QPRM() macros are useable for plugins
++ SDK: qstring template class has more member functions
++ SDK: removed HT_GRAPH and added 2 parameters to create_graph_viewer() This breaks the existing graph view plugins (sorry) but this part of IDA API has not been settled yet.
++ SDK: set_ti() and set_op_ti() always update the field list in the database
++ SDK: switch_info_t structure has been improved to handle more cases
++ SDK: tform interface was unusable because the window handles were not valid at the form creation time; added events tform_visible/tform_invisible to solve this problem
++ SDK: the kernel handles CM_CC_SPECIAL calling convention; the ph.calc_arglocs callback does not need to handle it anymore
++ SDK: the node titlebar height can be specified in create_graph_viewer()
++ SDK: ua_dodata2() replaces ua_dodata(). The new function handles correctly references to external symbols. ua_dodata() could not handle them because it had no operand offset information and could not calculate the base address of the name
++ SDK: ua_outop2() allows to specify GETN_NODUMMY ans obtain text representation of an operand without modifying the database;
++ SDK: ua_stkvar2() function accepts 'flags' parameter. Currently there is only one constant: STKVAR_VALID_SIZE. It means that the x.dtyp field contains the stack variable data type. For instructions like "lea" this flag should be cleared.
+
+Version 5.2
+-----------
+
+The biggest change is the set of function to manipulate local type definitions.
+Now local types have ordinal numbers assigned to them. This allows us to rename
+them freely and get rid of name references. All references to local types are made
+using ordinal numbers.
+
+
++ SDK: add_chooser_command() to add user-defined actions to chooser windows
++ SDK: added a callback for mouse click events in custom viewers; graph viewers are custom viewers too and all custom viewer functions can be used with them
++ SDK: added pc_module_t::find_reg_value callback so that plugins can find register values if necessary
++ SDK: added readsel2() to get more info about the current selection
++ SDK: added reserve(), capacity(), swap() functions to the qvector template class
++ SDK: added set_custom_viewer_range()
++ SDK: added support for negative operand values in offsets; the kernel will use a negative value if the OOF_SIGNED bit is used in outflags; PPC and M32R listings are much better
++ SDK: added wait_for_next_event() and get_debug_event() functions
++ SDK: almost all type-related functions have til_t as the first parameter; this  will allow us to introduce local type libraries and local types in the future
++ SDK: more efficient (but more memory hungry) implementation of qvector::resize()
++ SDK: new event ui_ready_to_run: occurs when the user interface is fully initialized. this event can be used to run automatic actions from plugins
++ SDK: new function compact_til() should be called before storing til file to the disk; otherwise store_til() will compact the til anyway
++ SDK: new function: parse_reg_name()
++ SDK: ph.calc_arglocs has been superseded by ph.calc_arglocs2 (optimization)
++ SDK: prototypes of type-related functions have been modified to support unlimited type strings; old functions are still available but their use is strongly discouraged
++ SDK: qeprintf() function to print on stderr has been exported
++ SDK: qsplitpath() function has been replaced by qdirname()
++ SDK: replaced value_t with idc_value_t, a class which allocated/frees memory itself and does not require manual handling
++ SDK: show_wait_box() can display dialogs with the "cancel" button. For that, pass the wait messager prefixed with "HIDECANCEL\n"
+
+
+Version 5.3
+-----------
+
++ SDK: added a plugin to specify switch idiom details (uiswitch)
++ SDK: added coagulate_dref event (occurs when the kernel analyzes a dref or coagulates data)
++ SDK: added more qstring member functions and more types based on qvector/qstring
++ SDK: added qsleep()
++ SDK: added qwstring class for unicode strings
++ SDK: added register_extlang() to register third party expression evaluators
++ SDK: added resolve_typedef2(), it returns the name of the resolved type
++ SDK: added SaveBase() function to save the current idb
++ SDK: added ui_preprocess and ui_postprocess events to intercept ui commands
++ SDK: added xref creation/deletion events
++ SDK: choose_local_type() to choose types from the local type library
++ SDK: choosers can be created without main menu and status bar
++ SDK: exported determine_rtl() and apply_startup_sig() functions
++ SDK: got rid of time_t in the header files because its size is compiler-dependent; we use qtime32_t instead
++ SDK: renamed processor_t::get_jump_target as next_exec_insn; this callback must return the address of the next executed instruction in all cases, not only for jump instructions
++ SDK: set_segm_start/end functions accept SEGMOD_... flags as the last parameter
+
+
+Version 5.4
+-----------
+
++ SDK: ida generates pre-action events before modifying the database (please note not all modification have corresponding events because any plugin may modify the database on a very low level)
++ SDK: introduced command line interpreters. any plugin may introduce a CLI and the user may switch between them on the fly
++ SDK: added manual memory regions for the debugger module that can not report the memory layout. the user can specify the desired memory layout on the fly
++ SDK: add_chooser_command() is supported in the text version
++ SDK: added callbacks to modify graphs displayed by ida and to display graphs without functions; sample plugins ugraph2/3 illustrate how to use the new functions
++ SDK: added check_bpt() to check the state of a breakpoint
++ SDK: added convenience functions to pack data into bytevec_t
++ SDK: added create_disasm_graph() function
++ SDK: added create_generic_linput() to create inputs from any source
++ SDK: added DBG_FLAG_SMALLBLKS for debugger modules that usually work on slow connections
++ SDK: added debugger_t::set_dbg_options() for debugger specific options
++ SDK: added functions to access IDS files
++ SDK: added functions to work with intervals
++ SDK: added get_dbg_byte() to read data from the debugged process memory
++ SDK: added get_debmod_extensions() to debugger module interface; it can be used by debugger modules to publish additional functionality
++ SDK: added get_nsec_stamp() to get high precision time stamps
++ SDK: added inf.database_change_count. this field is incremented each time a byte is patched or regular segment information is changed (essentially it tracks 'real' program modifications)
++ SDK: added segment base and bitness information to memory_info_t and changed the prototype of get_memory_info in debugger_t; this is an incompatible change, the source code of existing debugger modules must be changed; however, existing debugger modules can be used without recompilation, the kernel will use the correct interface depending on the debugger api version number
++ SDK: added set_process_state() to manually modify the process state from a plugin
++ SDK: colons can be used in form input field labels by escaping them with backslashes.
++ SDK: forms: new field types: F for folder names and f for file names
++ SDK: get_db_byte() to read byte from database / patch_db_byte() to write byte to process memory only
++ SDK: is_valid_typename() to check type names. IDA permits characters encountered in c++ template names in type names.
++ SDK: new flag for debugger modules: DBG_FLAG_DONT_DISTURB. Debugger modules with this flag can  not carry out any actions once the application is let to run. They can only wait for the next event or suspend the application.
++ SDK: renamed ua_ana0 -> decode_insn(); ua_code -> create_insn()
++ SDK: Run() function can be used to execute not only compiled functions but also built-in functions and functions defined by plugins
+
+
+Version 5.5
+-----------
+
++ SDK: added build_anon_type_name()
++ SDK: added build_func_type() to facilitate building of type strings that represent functions
++ SDK: added callbacks to AskUsingForm so that the dialog can be modified on the fly
++ SDK: added change_storage_type() to change the storage method of arbitrary address range. please note that the sparse storage method works well only with uninitialized areas with huge objects
++ SDK: added floating point conversion functions for 64bit values
++ SDK: added functions for working with imports (enum_import_names and others, see nalt.hpp)
++ SDK: added get_zero_areas() to retrieve info about huge zero inited ranges
++ SDK: added <span class=emp>main_functor_t</span> - class that allows for code execution in the main thread from any other thread
++ SDK: added more convenient areacb_t::for_all_areas2(), which accepts a functor instead of (function,data) pair
++ SDK: added qlist compiler-independent template
++ SDK: added qthread_self()
++ SDK: added set_process_options() to set debugger process options
++ SDK: added ui_enable_input_hotkeys notification to let plugins temporary disable alphanumeric hotkeys which can interfere with user input
++ SDK: bitfield definitions in type strings have been changed. since there was no support for bitfields in the  parser, this change should not affect anybody
++ SDK: introduced dt_ldbl to represent long double types. long double is different from tbyte and can be 8,10,12, or 16 bytes depending on the compiler
++ SDK: is_sp_based() can now return information about operands which are substracted from stack pointer
++ SDK: patch_byte() and similar functions return success if they succeed in modifying either process memory or idb. before they were returning true only if both process memory and idb were modified
++ SDK: windbg kernel mode: added notion of <span class=emp>virtual threads</span>
+
+
+Version 5.6
+-----------
+
++ SDK: added "const" keywords to many public arguments and structure fields (to suppress frequent compiler warnings)
++ SDK: added a new idc_value_t type: VT_STR2. It is similar to VT_STR but keeps its value in a qstring. This allows us to store strings with embedded zeroes
++ SDK: added appcall() to call functions from the debugged application
++ SDK: added debugger_t.update_call_stack() for debugger module specific stack tracing mechanisms
++ SDK: added functions to manipulate IDC classes and class methods
++ SDK: added get_strmem_by_name()
++ SDK: added PR_DEFSEG64 (if set, segments are 64-bit by default)
++ SDK: added set_chooser_attribute_cb(). It can be used to specify colors and font attributes for each chooser line (GUI).
++ SDK: added set_dock_pos() to control the docking position of forms
++ SDK: added support for custom fixup types
++ SDK: added til_symbol_t structure and choose_named_type2() function
++ SDK: added user2qstr() and qstr2user() functions
++ SDK: choose_ioport_device() can filter device names and display a shorter list
++ SDK: If choose_ioport_device() with a filter callback generates a list of only one entry, that entry is returned without showing the dialog
++ SDK: It is possible to create persistent forms (which are not closed when switching to and from debug mode) with the FORM_PERSIST flag and open_tform()
++ SDK: multiple external languages can be installed; IDC is installed as an external language too
++ SDK: redefined new/delete operators in pro.h so that all plugins use common memory allocation functions
++ SDK: the dbg_suspend_process event is generated after synchronizing IDA state with the process state
+
+
+Version 5.7
+-----------
+
++ SDK: added find_extlang_by_ext()
++ SDK: added get_func_by_frame()
++ SDK: added get_varcall_regs() for processors that use registers for vararg calls (like printf)
++ SDK: added init_process/term_process/get_process_exit_code system independent functions
++ SDK: added netnode::supdel_range() to delete range of supval elements
++ SDK: added qfindfirst/qfindnext/qfindclose functions to enumerate files in a system independent way
++ SDK: added qrename() to rename files. qrename() does not fail if the new file exists (unix behavior)
++ SDK: added call_method to extlang
++ SDK: added set_idc_func_ex(); this function makes it possible to register idc functions that can work without an open idb; set_idc_func() is obsolete now and should not be used
++ SDK: added support for complex offsets with subtraction from the base value (REFINFO_SUBTRACT)
++ SDK: added VarGetClassName() to retrieve the class name of an IDC object
++ SDK: class areaset_t can now be used by plugins and modules
++ SDK: find_func_bounds() supports flag FIND_FUNC_IGNOREFN
++ SDK: MIPS processor module now uses the same instruction numbers for 32-bit and 16-bit instructions. Plugins that rely on those numbers might have to be recompiled.
++ SDK: ua_stkvarN and add_stkvarN could fail when adding a stack variable with an odd offset
+
+Version 6.0
+-----------
+
++ SDK: added functions to work with Qt version of IDA
++ SDK: added idb events for segment name/class modifications
++ SDK: get_many_bytes_ex() to retrieve bytes and information about initialized and unitialized bytes from the database

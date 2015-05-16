@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ida xmlns:xi="http://www.w3.org/2003/XInclude"
+     xmlns:xpath="http://www.idapro.com/ns/xpath"
+     xmlns:idc="http://www.idapro.com/ns/idc">
+  <templates>
+    <page X="processor_h8500_p" title="Hitachi H8/500 Processor Options" subtitle="How would you like the Hitachi H8/500 processor module to analyze the input file?" visible="false">
+      <checkbox variable="/ida/processors/h8500/@H8500_MIXED_SIZE" caption="Disassemble mixed size instructions">
+        <help>
+          According to the documentation, instructions like
+
+                  cmp:g.b #1:16, @0x222:16
+
+          are not allowed. The correct instruction is:
+
+                  cmp:g.b #1:8, @0x222:16
+
+          The size of the first operand should agree with the size
+          of the instruction. (exception mov:g)
+        </help>
+      </checkbox>
+    </page>
+  </templates>
+</ida>

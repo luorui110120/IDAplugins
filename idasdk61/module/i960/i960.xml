@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ida xmlns:xi="http://www.w3.org/2003/XInclude"
+     xmlns:xpath="http://www.idapro.com/ns/xpath"
+     xmlns:idc="http://www.idapro.com/ns/idc">
+  <templates>
+    <page X="processor_i960_p" title="Intel 960 Processor Options" subtitle="How would you like the Intel 960 processor module to analyze the input file?" visible="false">
+      <checkbox variable="/ida/processors/i960/@I960_STRICT" caption="Strictly adhere to instruction encodings">
+        <help>
+          If this option is on, IDA will check that unused fields
+          of instructions are filled by zeroes. If they are not,
+          it will refuse to disassemble the instruction.
+        </help>
+      </checkbox>
+    </page>
+  </templates>
+</ida>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ida xmlns:xi="http://www.w3.org/2003/XInclude"
+     xmlns:xpath="http://www.idapro.com/ns/xpath"
+     xmlns:idc="http://www.idapro.com/ns/idc">
+  <templates>
+    <page X="processor_hppa_p" title="PA-RISC Processor Options" subtitle="How would you like the PA-RISC processor module to analyze the input file?" visible="false">
+      <checkbox variable="/ida/processors/hppa/@HPPA_SIMPLIFY" caption="Simplify instructions">
+        <help>
+          If this option is on, IDA will simplify instructions and replace
+          them by clearer pseudo-instructions.
+          For example,
+
+                  or      0, 0, 0
+
+          will be replaced by
+
+                  nop
+        </help>
+      </checkbox>
+      <checkbox variable="/ida/processors/hppa/@HPPA_MNEMONIC" caption="Use mnemonic register names">
+        <help>
+          If checked, IDA will use mnemonic names of the registers:
+
+                  %r26:  %arg0
+                  %r25:  %arg1
+                  %r24:  %arg2
+                  %r23:  %arg3
+                  %r28:  %ret0
+        </help>
+      </checkbox>
+      <checkbox variable="/ida/processors/hppa/@HPPA_PSW_W"    caption="PSW bit W is on">
+        <help>
+          If this option is on, IDA will disassemble instructions as if
+          PSW W bit is on, i.e. addresses are treated as 64bit. In fact,
+          IDA still will truncate them to 32 bit, but this option changes
+          disassembly of load/store instructions.
+        </help>
+      </checkbox>
+    </page>
+  </templates>
+</ida>

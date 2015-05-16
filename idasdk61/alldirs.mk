@@ -1,0 +1,4 @@
+$(ALLDIRS):
+        @cd $@
+        @$(MAKE)
+        @cd ..

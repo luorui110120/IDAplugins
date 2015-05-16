@@ -1,0 +1,56 @@
+
+
+Please read "readme.txt" before reading this file!
+
+
+
+How to install SDK under Linux or OS X
+--------------------------------------
+
+All source files are the same for all platforms and are compiled using the
+same makefile. However, since IDA makefiles use Borland format,
+we have to preprocess them before passing them to UNIX make.
+It is done using the idamake.pl script in the bin subdirectory:
+
+        ~/idasrc/bin/idamake.pl
+
+This script will preprocess the makefile, create a temporary makefile
+and launch the GNU make utility on it.
+
+To build for Linux, the following environment variable must be defined:
+
+        export __LINUX__=1 (for Linux)
+or      export __MAC__=1   (for OS X)
+
+To create idal64 modules, define the __EA64__ symbol for make. For example:
+
+        __EA64__=1 ~/idasrc/bin/idamake.pl
+
+will compile a modlue for the 64-bit version of IDA.
+
+Please note that idal64 itself is a 32-bit application, so the above line
+compiles a 32-bit module that can handle 64-bit applications with idal64.
+
+To create a true 64-bit debugger module, define the __X64__ symbol:
+
+        __X64__=1 ~/idasrc/bin/idamake.pl
+
+This mode of compilation should be used only for debugger servers (all
+other IDA modules are 32-bit).
+
+Creating an alias for this commands is a good idea. I have the following in my
+.bashrc file:
+
+export __LINUX__=1
+export PATH=~/idasdk/bin:$PATH
+alias m='idamake.pl 2>&1'
+alias mm='__EA64__=1 idamake.pl 2>&1'
+alias mx='__X64__=1 idamake.pl 2>&1'
+
+
+Troubleshooting
+------------------------------
+
+If you get the error message: "ld: library not found for -lida", you forgot to
+copy libida.so (see "Libraries" section in readme.txt).
+

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ida xmlns:xi="http://www.w3.org/2003/XInclude"
+     xmlns:xpath="http://www.idapro.com/ns/xpath"
+     xmlns:idc="http://www.idapro.com/ns/idc">
+  <templates>
+    <page X="processor_f2mc_p" title="Fujitsu F2MC Processor Options" subtitle="How would you like the Fujitsu F2MC processor module to analyze the input file?" visible="false">
+      <checkbox variable="/ida/processors/f2mc/@F2MC_MACRO" caption="Use macro instructions">
+        <help>
+          If this option is on, IDA will try to combine several instructions
+          into a macro instruction.
+          For example,
+
+               sbbs    data:7, $1
+               bra     $2
+             $1:
+               jmp     LABEL
+             $2:
+
+          will be replaced by
+
+               sbbs16  data:7, LABEL
+        </help>
+      </checkbox>
+    </page>
+  </templates>
+</ida>

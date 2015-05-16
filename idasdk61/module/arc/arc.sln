@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "arc", "arc.vcproj", "{A0AAA443-9C3F-4F56-AA15-490F3829BEBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug64|Win32 = Debug64|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A0AAA443-9C3F-4F56-AA15-490F3829BEBF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0AAA443-9C3F-4F56-AA15-490F3829BEBF}.Debug|Win32.Build.0 = Debug|Win32
+		{A0AAA443-9C3F-4F56-AA15-490F3829BEBF}.Debug64|Win32.ActiveCfg = Debug64|Win32
+		{A0AAA443-9C3F-4F56-AA15-490F3829BEBF}.Debug64|Win32.Build.0 = Debug64|Win32
+		{A0AAA443-9C3F-4F56-AA15-490F3829BEBF}.Release|Win32.ActiveCfg = Release|Win32
+		{A0AAA443-9C3F-4F56-AA15-490F3829BEBF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

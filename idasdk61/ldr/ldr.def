@@ -1,0 +1,10 @@
+
+STUB        '..\STUB.'
+
+DESCRIPTION 'IDA input file loader module'
+
+EXPORTS
+;#pe-
+            _LDSC       @1
+;#pe*
+            _ident_tag  @3

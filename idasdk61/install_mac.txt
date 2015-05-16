@@ -1,0 +1,10 @@
+
+
+Please read "readme.txt" before reading this file!
+
+
+How to install SDK under Mac OS X
+------------------------------
+
+The installation for Mac OS X is the same as for Linux.
+Please refer to the install_linux.txt file for details.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ida xmlns:xi="http://www.w3.org/2003/XInclude"
+     xmlns:xpath="http://www.idapro.com/ns/xpath"
+     xmlns:idc="http://www.idapro.com/ns/idc">
+  <templates>
+    <page X="processor_tms32055_p" title="Texas Instruments TMS320C55 Processor Options" subtitle="How would you like the Texas Instruments TMS320C55 processor module to analyze the input file?" visible="false">
+      <checkbox variable="/ida/processors/tms32055/@TMS320C55_IO"  caption="Use I/O definitions">
+        <help>
+          If this option is on, IDA will use I/O definitions
+          from the configuration file into a macro instruction.
+        </help>
+      </checkbox>
+      <checkbox variable="/ida/processors/tms32055/@TMS320C55_MMR" caption="Detect memory mapped registers">
+        <help>
+          If this option is on, IDA will replace addresses
+          by an equivalent memory mapped register.
+        </help>
+      </checkbox>
+    </page>
+  </templates>
+</ida>

@@ -1,0 +1,10 @@
+include allmake.unx
+
+ALLDIRS=module ldr plugins
+
+.PHONY: $(ALLDIRS)
+
+all:    $(ALLDIRS)
+
+$(ALLDIRS):
+	@cd $@; idamake.pl

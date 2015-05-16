@@ -1,0 +1,10 @@
+include ../allmake.unx
+
+ALLDIRS=choose2 getlines funclist procext vcsample debugger
+.PHONY: $(ALLDIRS)
+
+all:    $(ALLDIRS)
+
+$(ALLDIRS):
+	@cd $@; idamake.pl
+

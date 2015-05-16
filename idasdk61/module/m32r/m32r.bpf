@@ -1,0 +1,13 @@
+USEUNIT("ana.cpp");
+USEUNIT("emu.cpp");
+USEUNIT("ins.cpp");
+USEUNIT("out.cpp");
+USEUNIT("reg.cpp");
+USELIB("..\..\LIBBOR.W32\ida.lib");
+USEDEF("..\IDP.DEF");
+USE("ins.hpp", File);
+USE("m32r.hpp", File);
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+
+DllEntryPoint

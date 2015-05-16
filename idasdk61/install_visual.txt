@@ -1,0 +1,48 @@
+
+How to set up VC++ 2005 Express for IDA
+---------------------------------------
+
+
+Please read "readme.txt" before reading this file!
+
+1. File | New | Project from Existing code
+2. Project type is VC++ <next>
+3. Project file location: <folder where you have your files>
+   Project name: <your plugin's name>
+4. How do you want to build the project?
+   Select "Use Visual Studio"
+      Project type: Dynamically linked library (DLL) project
+      <next>
+5. Enter the following Preprocessor definitions:
+       __NT__;__IDP__;
+6. Enter the include path: eg. C:\IDASDK\include;C:\MSSDK\include;
+<next>
+7. Same As Debug Configuration <next>
+8. <finish>
+
+Once the project is initialized, right-click on the project name and pick Properties.
+
+9. Under the Configutation Properties
+     General | Output Directory: c:\program files\ida\plugins
+<apply>
+10.  Debugging | Command: c:\program files\IDA\idag.exe
+<apply>
+
+11. C/C++ | Code Generation | Runtime library: Multithreaded Debug (/MTd) (not DLL)
+(visible only after you add one .cpp file to the project)
+
+12. Linker | General | Output File: $(OutDir)\$(ProjectName).plw
+                       Additional Library Dirs: c:\mssdk\lib
+
+13. Linker | Input | Additional Dependencies: c:\IDASDK\libvc.w32\ida.lib
+<apply>
+
+14. Linker | Command Line | Additional options: /EXPORT:PLUGIN
+<apply>
+
+Click on OK, and try to rebuild the project
+
+
+
+NOTE: to build modules for IDAG64, define the __EA64__ preprocessor symbol.
+NOTE: to build 64-bit debugger servers, define the __X64__ preprocessor symbol.
