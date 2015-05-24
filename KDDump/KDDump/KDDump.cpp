@@ -9,6 +9,7 @@
 #include <diskio.hpp>
 
 
+
 #pragma comment(lib,"ida.lib")
 #define  MSG msg
 #define  USHORT ushort
@@ -17,11 +18,16 @@ char *dialog =			//给窗口布局
 "STARTITEM 0\n"			//让第一项获得焦点
 "Dump Data \n\n"	//窗口标题
 "Please Input Addr\n"	//文本内容
+#ifdef __EA64__
+"<#数据地址 0x#StartAddr  :M:17:16::>\n"	//一个16进制数
+"<#数据地址 0x#EndAddr/Len:M:17:16::>\n"	//一个16进制数
+#else
 "<#数据地址 0x#StartAddr  :M:9:16::>\n"	//一个16进制数
 "<#数据地址 0x#EndAddr/Len:M:9:16::>\n"	//一个16进制数
+#endif
 "<##Option##EndAddr:R>\n"	//给单选框提供组
-"<Len:R>>\n";		//组内的第二个
-
+"<Len:R>>\n"		//组内的第二个
+"<##Check Boxes##StartAddr设为段首地址:C>>\n";
 
 int __stdcall IDAP_init(void)
 {
@@ -50,31 +56,52 @@ void __stdcall IDAP_run(int arg)
 	char *lpSavePath;
 	char szFileName[256] = {0};
 	//	char szTmp[100] = {0};
+	segment_t *curseg;
 	USHORT nRadio = 0;
-	uval_t nStartAddres = get_screen_ea();
-	uval_t nEndAddres = nStartAddres + 0x100;
+	USHORT checkmask = 0;
+	ea_t nStartAddres = get_screen_ea();
+	ea_t nEndAddres = nStartAddres + 0x100;
 	int j = 0;
 	int i = 0;
 	FILE *handle;
 	FILE *f;
-	int size = 0;
+	asize_t size = 0;
 	int nCover = 0;
 	//	qstrncpy(szInValue,"",sizeof(szInValue));
-
-	if(AskUsingForm_c(dialog, &nStartAddres, &nEndAddres, &nRadio) == 1)
+	if( curseg = getseg(nStartAddres))
 	{
+		nEndAddres = curseg->endEA;;
+	}
+	while(!isLoaded(nEndAddres - 1))
+	{
+		nEndAddres -= 0x100;
+	}
+	if(AskUsingForm_c(dialog, &nStartAddres, &nEndAddres, &nRadio, &checkmask) == 1)
+	{
+		if(checkmask)
+		{
+			nStartAddres = curseg->startEA;
+		}
 		if(nRadio)
 		{
 			nEndAddres += nStartAddres;
 		}
 		msg("==============开始Dump数据==============\n");
+#ifdef __EA64__
+		msg("StartAddres:0x%llX  EndAddres:0x%llX\n", nStartAddres, nEndAddres);
+#else
 		msg("StartAddres:0x%08X  EndAddres:0x%08X\n", nStartAddres, nEndAddres);
+#endif
 		if(isLoaded(nStartAddres) && isLoaded(nEndAddres - 1))
 		{
 			size = nEndAddres - nStartAddres;
 			if(size > 0)
 			{
+#ifdef __EA64__
+				sprintf(szFileName, "%llX-%llX.Dump", nStartAddres, nEndAddres);
+#else
 				sprintf(szFileName, "%08X-%08X.Dump", nStartAddres, nEndAddres);
+#endif
 				lpSavePath = askfile_cv(1, szFileName, "SavePath", 0);
 				if(lpSavePath == NULL)
 				{
@@ -96,11 +123,12 @@ void __stdcall IDAP_run(int arg)
 					warning("打开文件失败 Error!\n");
 					return;
 				}
-				uchar * mem = (uchar *)malloc(size + 1);
+				
+				uchar * mem = (uchar *)qalloc(size + 1);
 				get_many_bytes(nStartAddres,mem, size);
 				ewrite(handle, mem, size);
 				eclose(handle);
-				free(mem);
+				qfree(mem);
 				msg("SavePath:%s\n", lpSavePath);
 				msg("==============Dump数据成功==============\n");
 			}
@@ -130,7 +158,7 @@ char IDAP_comment[] = "Comment of my first ida plugin. By: 空道.";
 char IDAP_help[] = "http://bbs.chinapyg.com/";
 // 在Edit->Plugins 菜单中，插件的现实名称，
 // 它能被用户的plugins.cfg文件改写
-char IDAP_name[] = "MyDump";
+char IDAP_name[] = "KDDump";
 // 启动插件的热键，纯字符的定义，比较易懂
 char IDAP_hotkey[] = "Alt-d";
 // 所有PLUGIN对象导出的重要属性。
