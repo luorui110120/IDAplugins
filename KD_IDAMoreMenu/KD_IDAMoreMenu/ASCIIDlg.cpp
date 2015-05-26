@@ -1,0 +1,337 @@
+#include "ASCIIDlg.h"
+
+RECT rcTarget; // 矩形外沿
+RECT rcWindows;
+DataDir_ASCID ASCID_Array[]=
+{
+	{IDC_ASC1,IDC_ASCDEC1,IDC_ASCHEX1},
+	{IDC_ASC2,IDC_ASCDEC2,IDC_ASCHEX2},
+	{IDC_ASC3,IDC_ASCDEC3,IDC_ASCHEX3},
+	{IDC_ASC4,IDC_ASCDEC4,IDC_ASCHEX4},
+	{IDC_ASC5,IDC_ASCDEC5,IDC_ASCHEX5},
+	{IDC_ASC6,IDC_ASCDEC6,IDC_ASCHEX6},
+	{IDC_ASC7,IDC_ASCDEC7,IDC_ASCHEX7},
+	{IDC_ASC8,IDC_ASCDEC8,IDC_ASCHEX8},
+	{IDC_ASC9,IDC_ASCDEC9,IDC_ASCHEX9},
+	{IDC_ASC10,IDC_ASCDEC10,IDC_ASCHEX10},
+	{IDC_ASC11,IDC_ASCDEC11,IDC_ASCHEX11},
+	{IDC_ASC12,IDC_ASCDEC12,IDC_ASCHEX12},
+	{IDC_ASC13,IDC_ASCDEC13,IDC_ASCHEX13},
+	{IDC_ASC14,IDC_ASCDEC14,IDC_ASCHEX14},
+	{IDC_ASC15,IDC_ASCDEC15,IDC_ASCHEX15},
+	{IDC_ASC16,IDC_ASCDEC16,IDC_ASCHEX16},
+	{IDC_ASC17,IDC_ASCDEC17,IDC_ASCHEX17},
+	{IDC_ASC18,IDC_ASCDEC18,IDC_ASCHEX18},
+	{IDC_ASC19,IDC_ASCDEC19,IDC_ASCHEX19},
+	{IDC_ASC20,IDC_ASCDEC20,IDC_ASCHEX20},
+	{IDC_ASC21,IDC_ASCDEC21,IDC_ASCHEX21},
+	{IDC_ASC22,IDC_ASCDEC22,IDC_ASCHEX22},
+	{IDC_ASC23,IDC_ASCDEC23,IDC_ASCHEX23},
+	{IDC_ASC24,IDC_ASCDEC24,IDC_ASCHEX24},
+	{IDC_ASC25,IDC_ASCDEC25,IDC_ASCHEX25},
+	{IDC_ASC26,IDC_ASCDEC26,IDC_ASCHEX26},
+	{IDC_ASC27,IDC_ASCDEC27,IDC_ASCHEX27},
+	{IDC_ASC28,IDC_ASCDEC28,IDC_ASCHEX28},
+	{IDC_ASC29,IDC_ASCDEC29,IDC_ASCHEX29},
+	{IDC_ASC30,IDC_ASCDEC30,IDC_ASCHEX30},
+	{IDC_ASC31,IDC_ASCDEC31,IDC_ASCHEX31},
+	{IDC_ASC32,IDC_ASCDEC32,IDC_ASCHEX32},
+	{IDC_ASC33,IDC_ASCDEC33,IDC_ASCHEX33},
+	{IDC_ASC34,IDC_ASCDEC34,IDC_ASCHEX34},
+	{IDC_ASC35,IDC_ASCDEC35,IDC_ASCHEX35},
+	{IDC_ASC36,IDC_ASCDEC36,IDC_ASCHEX36},
+	{IDC_ASC37,IDC_ASCDEC37,IDC_ASCHEX37},
+	{IDC_ASC38,IDC_ASCDEC38,IDC_ASCHEX38},
+	{IDC_ASC39,IDC_ASCDEC39,IDC_ASCHEX39},
+	{IDC_ASC40,IDC_ASCDEC40,IDC_ASCHEX40},
+	{IDC_ASC41,IDC_ASCDEC41,IDC_ASCHEX41},
+	{IDC_ASC42,IDC_ASCDEC42,IDC_ASCHEX42},
+	{IDC_ASC43,IDC_ASCDEC43,IDC_ASCHEX43},
+	{IDC_ASC44,IDC_ASCDEC44,IDC_ASCHEX44},
+	{IDC_ASC45,IDC_ASCDEC45,IDC_ASCHEX45},
+	{IDC_ASC46,IDC_ASCDEC46,IDC_ASCHEX46},
+	{IDC_ASC47,IDC_ASCDEC47,IDC_ASCHEX47},
+	{IDC_ASC48,IDC_ASCDEC48,IDC_ASCHEX48},
+	{IDC_ASC49,IDC_ASCDEC49,IDC_ASCHEX49},
+	{IDC_ASC50,IDC_ASCDEC50,IDC_ASCHEX50},
+	{IDC_ASC51,IDC_ASCDEC51,IDC_ASCHEX51},
+	{IDC_ASC52,IDC_ASCDEC52,IDC_ASCHEX52},
+	{IDC_ASC53,IDC_ASCDEC53,IDC_ASCHEX53},
+	{IDC_ASC54,IDC_ASCDEC54,IDC_ASCHEX54},
+	{IDC_ASC55,IDC_ASCDEC55,IDC_ASCHEX55},
+	{IDC_ASC56,IDC_ASCDEC56,IDC_ASCHEX56},
+	{IDC_ASC57,IDC_ASCDEC57,IDC_ASCHEX57},
+	{IDC_ASC58,IDC_ASCDEC58,IDC_ASCHEX58},
+	{IDC_ASC59,IDC_ASCDEC59,IDC_ASCHEX59},
+	{IDC_ASC60,IDC_ASCDEC60,IDC_ASCHEX60},
+	{IDC_ASC61,IDC_ASCDEC61,IDC_ASCHEX61},
+	{IDC_ASC62,IDC_ASCDEC62,IDC_ASCHEX62},
+	{IDC_ASC63,IDC_ASCDEC63,IDC_ASCHEX63},
+	{IDC_ASC64,IDC_ASCDEC64,IDC_ASCHEX64},
+	{IDC_ASC65,IDC_ASCDEC65,IDC_ASCHEX65},
+	{IDC_ASC66,IDC_ASCDEC66,IDC_ASCHEX66},
+	{IDC_ASC67,IDC_ASCDEC67,IDC_ASCHEX67},
+	{IDC_ASC68,IDC_ASCDEC68,IDC_ASCHEX68},
+	{IDC_ASC69,IDC_ASCDEC69,IDC_ASCHEX69},
+	{IDC_ASC70,IDC_ASCDEC70,IDC_ASCHEX70},
+	{IDC_ASC71,IDC_ASCDEC71,IDC_ASCHEX71},
+	{IDC_ASC72,IDC_ASCDEC72,IDC_ASCHEX72},
+	{IDC_ASC73,IDC_ASCDEC73,IDC_ASCHEX73},
+	{IDC_ASC74,IDC_ASCDEC74,IDC_ASCHEX74},
+	{IDC_ASC75,IDC_ASCDEC75,IDC_ASCHEX75},
+	{IDC_ASC76,IDC_ASCDEC76,IDC_ASCHEX76},
+	{IDC_ASC77,IDC_ASCDEC77,IDC_ASCHEX77},
+	{IDC_ASC78,IDC_ASCDEC78,IDC_ASCHEX78},
+	{IDC_ASC79,IDC_ASCDEC79,IDC_ASCHEX79},
+	{IDC_ASC80,IDC_ASCDEC80,IDC_ASCHEX80},
+	{IDC_ASC81,IDC_ASCDEC81,IDC_ASCHEX81},
+	{IDC_ASC82,IDC_ASCDEC82,IDC_ASCHEX82},
+	{IDC_ASC83,IDC_ASCDEC83,IDC_ASCHEX83},
+	{IDC_ASC84,IDC_ASCDEC84,IDC_ASCHEX84},
+	{IDC_ASC85,IDC_ASCDEC85,IDC_ASCHEX85},
+	{IDC_ASC86,IDC_ASCDEC86,IDC_ASCHEX86},
+	{IDC_ASC87,IDC_ASCDEC87,IDC_ASCHEX87},
+	{IDC_ASC88,IDC_ASCDEC88,IDC_ASCHEX88},
+	{IDC_ASC89,IDC_ASCDEC89,IDC_ASCHEX89},
+	{IDC_ASC90,IDC_ASCDEC90,IDC_ASCHEX90},
+	{IDC_ASC91,IDC_ASCDEC91,IDC_ASCHEX91},
+	{IDC_ASC92,IDC_ASCDEC92,IDC_ASCHEX92},
+	{IDC_ASC93,IDC_ASCDEC93,IDC_ASCHEX93},
+	{IDC_ASC94,IDC_ASCDEC94,IDC_ASCHEX94},
+	{IDC_ASC95,IDC_ASCDEC95,IDC_ASCHEX95},
+	{IDC_ASC96,IDC_ASCDEC96,IDC_ASCHEX96},
+	{IDC_ASC97,IDC_ASCDEC97,IDC_ASCHEX97},
+	{IDC_ASC98,IDC_ASCDEC98,IDC_ASCHEX98},
+	{IDC_ASC99,IDC_ASCDEC99,IDC_ASCHEX99},
+	{IDC_ASC100,IDC_ASCDEC100,IDC_ASCHEX100},
+	{IDC_ASC101,IDC_ASCDEC101,IDC_ASCHEX101},
+	{IDC_ASC102,IDC_ASCDEC102,IDC_ASCHEX102},
+	{IDC_ASC103,IDC_ASCDEC103,IDC_ASCHEX103},
+	{IDC_ASC104,IDC_ASCDEC104,IDC_ASCHEX104},
+	{IDC_ASC105,IDC_ASCDEC105,IDC_ASCHEX105},
+	{IDC_ASC106,IDC_ASCDEC106,IDC_ASCHEX106},
+	{IDC_ASC107,IDC_ASCDEC107,IDC_ASCHEX107},
+	{IDC_ASC108,IDC_ASCDEC108,IDC_ASCHEX108},
+	{IDC_ASC109,IDC_ASCDEC109,IDC_ASCHEX109},
+	{IDC_ASC110,IDC_ASCDEC110,IDC_ASCHEX110},
+	{IDC_ASC111,IDC_ASCDEC111,IDC_ASCHEX111},
+	{IDC_ASC112,IDC_ASCDEC112,IDC_ASCHEX112},
+	{IDC_ASC113,IDC_ASCDEC113,IDC_ASCHEX113},
+	{IDC_ASC114,IDC_ASCDEC114,IDC_ASCHEX114},
+	{IDC_ASC115,IDC_ASCDEC115,IDC_ASCHEX115},
+	{IDC_ASC116,IDC_ASCDEC116,IDC_ASCHEX116},
+	{IDC_ASC117,IDC_ASCDEC117,IDC_ASCHEX117},
+	{IDC_ASC118,IDC_ASCDEC118,IDC_ASCHEX118},
+	{IDC_ASC119,IDC_ASCDEC119,IDC_ASCHEX119},
+	{IDC_ASC120,IDC_ASCDEC120,IDC_ASCHEX120},
+	{IDC_ASC121,IDC_ASCDEC121,IDC_ASCHEX121},
+	{IDC_ASC122,IDC_ASCDEC122,IDC_ASCHEX122},
+	{IDC_ASC123,IDC_ASCDEC123,IDC_ASCHEX123},
+	{IDC_ASC124,IDC_ASCDEC124,IDC_ASCHEX124},
+	{IDC_ASC125,IDC_ASCDEC125,IDC_ASCHEX125},
+	{IDC_ASC126,IDC_ASCDEC126,IDC_ASCHEX126},
+	{IDC_ASC127,IDC_ASCDEC127,IDC_ASCHEX127},
+	{IDC_ASC128,IDC_ASCDEC128,IDC_ASCHEX128}
+
+};
+TitleDir_ID TitleID_Array[]=
+{
+	{IDC_TITLE1,IDC_A1,IDC_STATDEC1,IDC_STATHEX1},
+	{IDC_TITLE2,IDC_A2,IDC_STATDEC2,IDC_STATHEX2},
+	{IDC_TITLE3,IDC_A3,IDC_STATDEC3,IDC_STATHEX3},
+	{IDC_TITLE4,IDC_A4,IDC_STATDEC4,IDC_STATHEX4},
+	{IDC_TITLE5,IDC_A5,IDC_STATDEC5,IDC_STATHEX5}
+};
+
+INT_PTR CALLBACK AsciiDlgProc(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
+{
+	int i=0;
+	HBRUSH   hbr  ;
+	HDC hdc;          // DC 句柄 
+	PAINTSTRUCT ps;   
+
+	switch (Message)  
+	{  
+	case WM_INITDIALOG: 
+		InitDlg(hwnd);
+		break;
+	case WM_PAINT:// 绘制
+		
+		BeginPaint(hwnd, &ps); 
+				//GetWindowRect(hwnd,&rcWindows
+				GetClientRect(hwnd,&rcWindows);
+				GetClientRect(GetDlgItem(hwnd,IDC_MAINFRAME),&rcTarget);
+				// 选择画刷
+				SelectObject(ps.hdc, GetStockObject(WHITE_BRUSH)); 
+		
+				// 调用Rectangle
+				Rectangle(
+							ps.hdc, 
+							rcTarget.left+42,
+							rcTarget.top+10,//(rcWindows.top-rcTarget.top), 
+							rcTarget.right+42, 
+							rcTarget.bottom+10
+						); 
+				rcTarget.left = rcTarget.right = 0; 
+				rcTarget.top = rcTarget.bottom = 0; 
+				EndPaint(hwnd, &ps); 
+		
+		break; 
+	case   WM_CTLCOLORSTATIC:   //   改变文本颜色和背景颜色   
+		return ChangColor(hwnd,(HWND)lParam,wParam);
+		break;
+/*
+	case WM_COMMAND:
+		if(LOWORD(wParam)==IDC_BTNCLOSE)
+			EndDialog(hwnd,IDOK);
+			break;*/
+
+	case WM_CLOSE:  
+		EndDialog(hwnd,IDOK);
+		break;  
+	default:
+		return FALSE;
+	}  
+	return FALSE ;  
+}
+LRESULT ChangColor(HWND hwnd,HWND subHwnd,WPARAM wParam)
+{
+	int i=0;
+	BOOL bFind = FALSE;
+	for ( i=0;i<ASCIINUM;i++)
+	{
+		if (subHwnd == GetDlgItem(hwnd,ASCID_Array[i].ID_ASC))
+		{
+			SetTextColor((HDC)wParam,   0xFF0000);   //***   
+			SetBkColor ((HDC)wParam, RGB(255,255,255));
+			bFind = TRUE;
+			break;
+		}
+		if (subHwnd == GetDlgItem(hwnd,ASCID_Array[i].ID_DEC) ||
+			subHwnd == GetDlgItem(hwnd,ASCID_Array[i].ID_HEX))
+		{
+			SetTextColor((HDC)wParam,   0xFF00FF);   //***   
+			SetBkColor ((HDC)wParam, RGB(255,255,255));
+			bFind = TRUE;
+			break;
+		}
+	}
+	for ( i = 0;i<SHOWCOLUMN;i++)
+	{
+		if (subHwnd == GetDlgItem(hwnd,TitleID_Array[i].ID_DEC) ||
+			subHwnd == GetDlgItem(hwnd,TitleID_Array[i].ID_HEX) ||
+			subHwnd == GetDlgItem(hwnd,TitleID_Array[i].ID_CHAR) ||
+			subHwnd == GetDlgItem(hwnd,TitleID_Array[i].ID_ASC))
+		{
+			//SetTextColor((HDC)wParam,   0xFFFFFF);   //***   
+			SetBkColor ((HDC)wParam, RGB(255,255,255));
+			bFind = TRUE;
+			break;
+		}
+	}
+	if (!bFind)
+	{
+		SetBkColor ((HDC)wParam, GetSysColor(COLOR_BTNFACE));
+	}
+	
+	SetWindowLong(hwnd,   DWL_MSGRESULT,   (LONG)TRUE);   
+	return   (LRESULT)GetSysColorBrush(COLOR_BTNFACE);   
+
+}
+void InitDlgTitle(HWND hwnd)
+{
+	static   HFONT   hfont;   //   自定义字体的句柄
+	LOGFONT   lgf;   
+	GetObject(GetStockObject(DEFAULT_GUI_FONT),   sizeof(lgf),   &lgf);   
+	lgf.lfWeight   =   FW_BOLD;   
+	hfont   =   CreateFontIndirect(&lgf); 
+	//   设置字体   
+	for (int i = 0;i<SHOWCOLUMN;i++)
+	{
+		SendMessage(GetDlgItem(hwnd,TitleID_Array[i].ID_ASC),   WM_SETFONT,   (WPARAM)hfont,   (LPARAM)TRUE);   //***   
+		SendMessage(GetDlgItem(hwnd,TitleID_Array[i].ID_CHAR),   WM_SETFONT,   (WPARAM)hfont,   (LPARAM)TRUE);   //***   
+		SendMessage(GetDlgItem(hwnd,TitleID_Array[i].ID_DEC),   WM_SETFONT,   (WPARAM)hfont,   (LPARAM)TRUE);   //***   
+		SendMessage(GetDlgItem(hwnd,TitleID_Array[i].ID_HEX),   WM_SETFONT,   (WPARAM)hfont,   (LPARAM)TRUE);   //***   
+
+	}
+	
+}
+void InitDlg(HWND hwnd)
+{
+	InitDlgTitle(hwnd);
+	static   HFONT   hfont_static;   //   自定义字体的句柄   
+	static   HWND   hwnd_static;   //   Static   控件的句柄   
+	char szASC[4]={0};
+	char szDec[4]={0};
+	char szHex[4]={0};
+	for (int i=0;i<ASCIINUM;i++)
+	{
+		wsprintf(szASC,"%c",i);
+		wsprintf(szDec,"%d",i);
+		wsprintf(szHex,"%0x",i);
+		HexCharUpperASC(szHex);
+		//   建立自定义字体   
+		LOGFONT   lgf;   
+		GetObject(GetStockObject(DEFAULT_GUI_FONT),   sizeof(lgf),   &lgf);   
+		lgf.lfWeight   =   FW_BOLD; 
+		lgf.lfHeight = 13;
+		lgf.lfCharSet =GB2312_CHARSET;
+		hfont_static   =   CreateFontIndirect(&lgf);   
+		//SetTextColor()
+		//   设置字体   
+		SendMessage(GetDlgItem(hwnd,ASCID_Array[i].ID_ASC),   WM_SETFONT,   (WPARAM)hfont_static,   (LPARAM)TRUE);   //***   
+		SendMessage(GetDlgItem(hwnd,ASCID_Array[i].ID_DEC),   WM_SETFONT,   (WPARAM)hfont_static,   (LPARAM)TRUE);   //***   
+		SendMessage(GetDlgItem(hwnd,ASCID_Array[i].ID_HEX),   WM_SETFONT,   (WPARAM)hfont_static,   (LPARAM)TRUE);   //***   
+		switch (i)
+		{
+			case 0:
+				strcpy(szASC,"NUL");
+			break;
+			case 9:
+				strcpy(szASC,"LF");
+				break;
+			case 10:
+				strcpy(szASC,"VT");
+				break;
+			case 13:
+				strcpy(szASC,"SO");
+				break;
+			case 27:
+				strcpy(szASC,"ESC");
+				break;
+			case 28:
+				strcpy(szASC,"FS");
+				break;
+			case 29:
+				strcpy(szASC,"GS");
+				break;
+			case 30:
+				strcpy(szASC,"RS");
+				break;
+			case 31:
+				strcpy(szASC,"US");
+				break;
+			case 32:
+				strcpy(szASC,"SPC");
+				break;
+			case 127:
+				strcpy(szASC,"DEL");
+				break;
+
+		}
+		SetDlgItemText(hwnd,ASCID_Array[i].ID_ASC,szASC);
+		SetDlgItemText(hwnd,ASCID_Array[i].ID_DEC,szDec);
+		SetDlgItemText(hwnd,ASCID_Array[i].ID_HEX,szHex);
+	}
+}
+void HexCharUpperASC(char *s)
+{
+	int i =0;
+	for (i = 0;i<strlen(s);i++)
+	{
+		if (s[i]>='a')
+		{
+			s[i]=s[i]-32;
+		}
+	}
+}
