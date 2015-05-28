@@ -6,6 +6,9 @@
 #include <vector>
 #include <string>
 using namespace std;
+
+
+
 class AUTO_BUFFER
 {
 private:

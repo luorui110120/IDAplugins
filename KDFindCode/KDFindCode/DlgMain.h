@@ -15,6 +15,14 @@
 #include "utility.h"
 
 
+//#define  IDA_DEBUG
+
+#ifdef IDA_DEBUG
+#define LOGD(fmt, ...)  msg(fmt, __VA_ARGS__)
+#else
+#define LOGD(fmt, ...)
+#endif
+
 #pragma comment(lib,"ida.lib")
 #define  USHORT ushort
 #define  byte uchar

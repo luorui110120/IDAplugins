@@ -7,6 +7,7 @@ netnode n_asmbuf("$ disasm_buf", 0, true);
 netnode n_asmoffset("$ disasm_offset", 0, true);
 netnode n_asmaddr("$ disasm_addr", 0, true);
 netnode n_asmtable("$ disasm_table", 0, true);
+//netnode n_history("$ disasm_history", 0, true);
 char *g_netnode_asmbuf;
 unsigned int  *g_netnode_asmoffset;
 unsigned int  *g_netnode_asmaddr;
@@ -17,7 +18,7 @@ strbuftable g_sbt_table = {0};
 
 
 HWND h_IDAMain = NULL;
-char g_szHistoryBuf[4096] = "ldr   *\r\ncmp r0,*";
+char g_szHistoryBuf[4096] =""; // "ldr   *\r\ncmp r0,*";
 
 void DumpBufLog(char *pbuf, unsigned int len)
 {
@@ -35,11 +36,11 @@ int SaveNetnode(netnode &n, AUTO_BUFFER &auto_buf)
 	nCount = auto_buf.Size() / 0x400;
 	for(i = 0; i < nCount; i++)
 	{
-		n.supset( NETNODE_START_INDEX + i, auto_buf.Get() + NETNODE_BUFFER_MAX * i, NETNODE_BUFFER_MAX);
+		n.supset( NETNODE_START_INDEX + i, strupr(auto_buf.Get()) + NETNODE_BUFFER_MAX * i, NETNODE_BUFFER_MAX);
 	}
 	if(auto_buf.Size() % 0x400)
 	{
-		n.supset( NETNODE_START_INDEX + i, auto_buf.Get() + NETNODE_BUFFER_MAX * nCount, auto_buf.Size() % NETNODE_BUFFER_MAX);
+		n.supset( NETNODE_START_INDEX + i, strupr(auto_buf.Get()) + NETNODE_BUFFER_MAX * nCount, auto_buf.Size() % NETNODE_BUFFER_MAX);
 		nCount++;
 	}
 	return nCount;
@@ -419,7 +420,7 @@ void OnButtonFind(HWND hwnd)
 			return;
 		}
 	//	trim(pszSearch);
-	//	msg("pszSearch:%s\n", pszSearch);
+		LOGD("pszSearch:%s\n", pszSearch);
 		i--;
 		while( (dwasmbufOffset = FindingString(g_netnode_asmbuf, pszSearch, dwasmbufOffset)) != 0xFFFFFFFF )
 		{
@@ -430,9 +431,10 @@ void OnButtonFind(HWND hwnd)
 			int nj = 0;
 			int j = i;
 			dwasmbufOffset++;
-			
+			LOGD("find offset: %08X\n", findoffset);
 			for(j = i; j < vSearchCodes.size(); j++)
 			{
+				LOGD("Find  buf: %s, search: %s\n", szOutBuf, vSearchCodes[j].c_str());
 				if(!MatchingString(szOutBuf, vSearchCodes[j].c_str(), false))
 				{
 					break;
