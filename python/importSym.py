@@ -1,12 +1,12 @@
 ﻿#-------------------------------------------------------------------------------
-# Name:        模块1
+# Name:        importSym
 # Purpose:
 #
-# Author:      Administrator
+# Author:      KD
 #
-# Created:     06-06-2014
-# Copyright:   (c) Administrator 2014
-# Licence:     <your licence>
+# Created:     06-20-2015
+# Copyright:   (c) KD 2015
+# Licence:     improt boot-kernle kallsyms
 #-------------------------------------------------------------------------------
 from idaapi import *
 import idc
