@@ -29,6 +29,8 @@
 #include <kernwin.hpp>
 #include <stdio.h>
 
+
+
 #define HEIGHT(rect) (LONG)(rect.bottom - rect.top)
 #define WIDTH(rect) (LONG)(rect.right - rect.left)
 #define NELEMS(a)  (sizeof(a) / sizeof((a)[0]))

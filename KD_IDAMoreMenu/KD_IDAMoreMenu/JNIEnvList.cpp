@@ -39,7 +39,11 @@ void idaapi idaList_getlien2(void *obj, ulong n, char* const *cells)
 	else
 	{
 		qsnprintf(cells[0], 0x100, "%X", n -1);
+#ifdef __EA64__
+		qsnprintf(cells[1], 0x100, "%X", (n -1) * 8);
+#else
 		qsnprintf(cells[1], 0x100, "%X", (n -1) * 4);
+#endif
 		qstrncpy(cells[2], g_szFunNames[n - 1], 1024);
 		qstrncpy(cells[3], g_szFunDefins[n - 1], 1024);
 
@@ -74,7 +78,11 @@ int ShowJNIEnvList()
 			int nCount = sizeof(g_szFunNames) / sizeof(g_szFunNames[0]);
 			for(i = 0; i < nCount; i++)
 			{
-				add_struc_member ( sptr, g_szFunNames[i], -1, dwrdflag(), NULL, 4 );
+			#ifdef __EA64__
+				add_struc_member ( sptr, g_szFunNames[i], -1, dwrdflag(), NULL, 8);
+			#else
+				add_struc_member ( sptr, g_szFunNames[i], -1, dwrdflag(), NULL, 4);
+			#endif
 			}
 		}
 	}

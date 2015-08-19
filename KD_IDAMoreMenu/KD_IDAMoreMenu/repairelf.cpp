@@ -111,11 +111,19 @@ int repairelf(char *lpFilePath)
 	unsigned char* pvFile=(unsigned char*)MapViewOfFile(hMapping,FILE_MAP_ALL_ACCESS,0,0,0); //创建视图 就是映射文件到内存;
 	int i = 0;
 	int flag = 0;
+#ifdef __EA64__
+	Elf64_Dyn *t_dyn;
+	Elf64_Phdr *t_phdr, *load1, *load2, *dynamic;
+	Elf64_Ehdr* ehdr = (Elf64_Ehdr*) pvFile;
+	t_phdr = (Elf64_Phdr*)(pvFile + sizeof(Elf64_Ehdr));
+#else
 	Elf32_Dyn *t_dyn;
 	Elf32_Phdr *t_phdr, *load1, *load2, *dynamic;
-	unsigned int dwProgBase = 0, dwInitOffset, dwInitSize, dwFiniOffset, dwFiniSize;
 	Elf32_Ehdr* ehdr = (Elf32_Ehdr*) pvFile;
 	t_phdr = (Elf32_Phdr*)(pvFile + sizeof(Elf32_Ehdr));
+#endif
+	ea_t dwProgBase = 0, dwInitOffset, dwInitSize, dwFiniOffset, dwFiniSize;
+	
 	for(i=0;i<ehdr->e_phnum;i++)
 	{
 		if(t_phdr->p_type == PT_LOAD)
@@ -141,6 +149,32 @@ int repairelf(char *lpFilePath)
 		t_phdr ++;
 	}
 	//////////////////// 分析 dynamic 段中的 信息
+#ifdef __EA64__
+	t_dyn = (Elf64_Dyn*)(pvFile + dynamic->p_offset);
+	for(i=0;i<dynamic->p_filesz / sizeof(Elf32_Dyn); i++)
+	{
+		switch (t_dyn->d_tag)
+		{
+		case DT_INIT_ARRAY:
+			msg("INIT addr = 0x%llX\n", t_dyn->d_un.d_val );
+			dwInitOffset = t_dyn->d_un.d_val - dwProgBase;
+			break;
+		case DT_INIT_ARRAYSZ:
+			msg("INIT size = 0x%llX\n", t_dyn->d_un.d_val);
+			dwInitSize = t_dyn->d_un.d_val ;
+			break;
+		case DT_FINI_ARRAY:
+			msg("FINI addr = 0x%llX\n", t_dyn->d_un.d_val );
+			dwFiniOffset = t_dyn->d_un.d_val - dwProgBase;
+			break;
+		case DT_FINI_ARRAYSZ:
+			msg("FINI size = 0x%llX\n", t_dyn->d_un.d_val );
+			dwFiniSize = t_dyn->d_un.d_val;
+			break;
+		}
+		t_dyn ++;
+	}
+#else
 	t_dyn = (Elf32_Dyn*)(pvFile + dynamic->p_offset);
 	for(i=0;i<dynamic->p_filesz / sizeof(Elf32_Dyn); i++)
 	{
@@ -165,20 +199,34 @@ int repairelf(char *lpFilePath)
 		}
 		t_dyn ++;
 	}
-	for(i = 0; i < dwInitSize / 4; i++)
+#endif
+#ifdef  __EA64__
+	#define  ELF_ADDR_SIZE 8
+#else
+	#define  ELF_ADDR_SIZE 4
+#endif
+	for(i = 0; i < dwInitSize / ELF_ADDR_SIZE; i++)
 	{
-		unsigned int addr = *(unsigned int*)(pvFile + dwInitOffset + i * 4);
-		if(addr && (addr != 0xFFFFFFFF ) )
+		ea_t addr = *(ea_t*)(pvFile + dwInitOffset + i * ELF_ADDR_SIZE);
+		if(addr && (addr != -1 ) )
 		{
+	#ifdef  __EA64__
+			msg("Init funtion rva: 0x%llX\n", addr);
+	#else
 			msg("Init funtion rva: 0x%08X\n", addr);
+	#endif
 		}
 	}
-	for(i = 0; i < dwFiniSize / 4; i++)
+	for(i = 0; i < dwFiniSize / ELF_ADDR_SIZE; i++)
 	{
-		unsigned int addr = *(unsigned int*)(pvFile + dwFiniOffset + i * 4);
-		if(addr && (addr != 0xFFFFFFFF ) )
+		ea_t addr = *(ea_t*)(pvFile + dwFiniOffset + i * ELF_ADDR_SIZE);
+		if(addr && (addr != -1 ) )
 		{
+#ifdef  __EA64__
+			msg("Fini funtion rva: 0x%llX\n", addr);
+#else
 			msg("Fini funtion rva: 0x%08X\n", addr);
+#endif
 		}
 	}
 	/////////将 section 设置为 0
