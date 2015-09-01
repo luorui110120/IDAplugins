@@ -25,7 +25,7 @@ char *dialog =			//给窗口布局
 	"STARTITEM 0\n"			//让第一项获得焦点
 	"Patch Datan\n\n"	//窗口标题
 	"Please enter the hexadecimal data size less 0x200\n"	//文本内容
-	"<String:A:32:32::>\n"	//第一项字符串数据
+	"<String:A:512:32::>\n"	//第一项字符串数据
 #ifdef __EA64__
 	"<#数据地址 0x#Addres:M:17:16::>\n"	//一个16进制数
 	"<循环次数  0x#nCount:M:17:16::>\n"	//一个16进制数据
@@ -145,8 +145,8 @@ void __stdcall IDAP_run(int arg)
 					return;
 				}
 			}
-			lpTmpBuf = (char *) malloc(nHexLen + 1);
-			memset(lpTmpBuf, 0, nHexLen + 1);
+			lpTmpBuf = (char *) malloc(nHexLen * 2 + 1);
+			memset(lpTmpBuf, 0, nHexLen * 2 + 1);
 			for(i = 0; i < nHexLen; i++)
 			{
 				sscanf(&szValue[i * 2],"%02x",lpTmpBuf + i);
@@ -161,14 +161,13 @@ void __stdcall IDAP_run(int arg)
 				reversedbuf((unsigned char*)lpTmpBuf + nSerializeSize *i, nSerializeSize);
 			}
 		}
-		lpInBuf = (char*)malloc(nHexLen * nCount + 1);
-		memset(lpInBuf, 0, nHexLen * nCount + 1);
+		lpInBuf = (char*)malloc(nHexLen * nCount * 2 + 1);
+		memset(lpInBuf, 0, nHexLen * nCount * 2 + 1);
 		for(i = 0; i < nCount; i++)
 		{
 			memcpy(lpInBuf + i * nHexLen, lpTmpBuf, nHexLen);
 		}
 		free(lpTmpBuf);
-
 		msg("==============修补数据库数据==============\n");
 		msg("String Value = %s\n",szValue);
 #ifdef __EA64__
@@ -178,11 +177,11 @@ void __stdcall IDAP_run(int arg)
 #endif
 		if(!nWriteRadio)
 		{
-			MSG("WriteData \n",nWriteRadio);
+			msg("WriteData \n",nWriteRadio);
 		}
 		else
 		{
-			MSG("XorWrite Data \n",nWriteRadio);
+			msg("XorWrite Data \n",nWriteRadio);
 		}
 		if( nHexLen * nCount > 0x100)
 		{
