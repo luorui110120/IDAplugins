@@ -3,6 +3,8 @@
 #include "DlgMain.h"
 using namespace std;
 extern char g_szReleasePath[256];
+extern HINSTANCE g_hInstance;
+HHOOK g_hhook;
 int g_nType = 0;
 #define HOTKEY_VALUE 0xB001
 #ifdef __EA64__
@@ -25,41 +27,66 @@ typedef struct _LocalVarilInfo
 ea_t g_Current = 0;
 DWORD g_nCodeLen = 0;
 HWND h_IDAMain = NULL;
+HWND h_DlgHwnd = NULL;
+
 BOOL WINAPI Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	static BOOL nFlasKey[VK_RETURN + 1] = {0};
 	switch(uMsg)
 	{
 		HANDLE_MSG(hWnd, WM_INITDIALOG, Main_OnInitDialog);
 		HANDLE_MSG(hWnd, WM_COMMAND, Main_OnCommand);
 		HANDLE_MSG(hWnd,WM_CLOSE, Main_OnClose);
 		HANDLE_MSG(hWnd,WM_HOTKEY, Main_HotKey);
-		if(uMsg == WM_KEYDOWN)
-		{
-				msg("WM_KEYDOWN: %X\n", wParam);
-				if(wParam == VK_CLEAR || wParam == VK_RETURN)
-				{
-					nFlasKey[wParam] = TRUE;
-					if(nFlasKey[VK_CLEAR] && nFlasKey[VK_RETURN])
-					{
-						msg("jinru Patch Arm\n");
-						//OnButtonCalc(hWnd);
-						nFlasKey[VK_CLEAR] = FALSE;
-						nFlasKey[VK_RETURN] = FALSE;
-						return TRUE;
-					}
-				}
-		}
-		else if(uMsg == WM_KEYUP)
-		{
-			if(wParam == VK_CLEAR || wParam == VK_RETURN)
-			{
-				nFlasKey[wParam] = FALSE;
-			}
-		}
+		
 	}
 
 	return FALSE;
+}
+
+int IntervalTime(DWORD dw_CONTROL, DWORD dw_RETURN)
+{
+	if(dw_CONTROL > dw_RETURN)
+	{
+		return dw_CONTROL - dw_RETURN;
+	}
+	else
+	{
+		return dw_RETURN - dw_CONTROL;
+	}
+}
+LRESULT CALLBACK KeyboardProc(int code,WPARAM wParam, LPARAM lParam)
+{
+	static DWORD dw_CONTROL = 0, dw_RETURN = 0; 
+	//msg("KeyboardProc: %X\n", wParam);
+	if( ((lParam>>30) & 1) && ( VK_RETURN == wParam || VK_CONTROL == wParam))
+	{
+		
+		if(VK_RETURN == wParam)
+		{
+			dw_RETURN = GetTickCount();
+		}
+		else
+		{
+			dw_CONTROL = GetTickCount();
+		}
+		if(IntervalTime(dw_CONTROL, dw_RETURN) < 3000 && (GetParent(GetFocus()) == h_DlgHwnd || GetFocus() == h_DlgHwnd))
+		{
+			// 这一步是为了删除一个 回车
+			SendMessage(FindWindowEx(h_DlgHwnd, NULL, "Edit", NULL), WM_CHAR, VK_BACK, 0);
+			dw_CONTROL = 0;
+			dw_RETURN = 0;
+			OnButtonCalc(h_DlgHwnd);
+		}
+		else
+		{
+			return CallNextHookEx(g_hhook, code, wParam ,lParam);
+		}
+	}
+	else
+	{
+		return CallNextHookEx(g_hhook, code, wParam ,lParam);
+	}
+	
 }
 
 BOOL Main_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
@@ -113,8 +140,12 @@ BOOL Main_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	SetDlgItemText(hwnd, IDC_EDIT_ADDR, szTmpBuf);
 //	GetCurrentDirectory(256, szCurrentBuf);
 //	MessageBox(NULL, g_szReleasePath, NULL, 0);
-	UnregisterHotKey(hwnd, HOTKEY_VALUE);
-	RegisterHotKey(hwnd, HOTKEY_VALUE ,MOD_CONTROL, VK_RETURN );
+//	UnregisterHotKey(hwnd, HOTKEY_VALUE);
+//	RegisterHotKey(hwnd, HOTKEY_VALUE ,MOD_CONTROL, VK_RETURN );
+	// 添加消息 按键 hook 就是接为解决快捷
+	h_DlgHwnd = hwnd;
+	g_hhook=SetWindowsHookEx(WH_KEYBOARD, KeyboardProc, g_hInstance, GetWindowThreadProcessId(hwnd,NULL));
+
 	return TRUE;
 }
 BOOL Main_HotKey(HWND hwnd, int nId, WPARAM wParam, LPARAM lParam)
@@ -126,6 +157,8 @@ BOOL Main_HotKey(HWND hwnd, int nId, WPARAM wParam, LPARAM lParam)
 	}
 	return FALSE;
 }
+
+
 void Main_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
 	switch(id)
@@ -156,7 +189,8 @@ void SetArmColor(DWORD addr, DWORD len, int nType, bgcolor_t dwColor)
 }
 void Main_OnClose(HWND hwnd)
 {
-	UnregisterHotKey(hwnd, HOTKEY_VALUE);
+//	UnregisterHotKey(hwnd, HOTKEY_VALUE);
+	UnhookWindowsHookEx(g_hhook);
 //	free(g_FunInfo);
 	g_lvInfos.clear();
 	SetForegroundWindow(h_IDAMain);
